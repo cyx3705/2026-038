@@ -33,13 +33,9 @@
 - 无法执行的检查必须在交付时说明原因和剩余风险，不能把“未运行”写成“已通过”。
 - 任务完成时，代码、现行文档、状态和 manifest 应相互一致。
 
-## 模板模式
+## 本项目入口
 
-当 `project.manifest.json` 中 `template.isTemplate` 为 `true` 时，本仓库仍是模板：
-
-- `{{...}}` 是允许存在的实例化占位符。
-- 新增根目录时必须选择 `a-*`、`b-*` 或 `z-*` 级别，并同步登记到 manifest。
-- 修改模板后运行普通合同检查。
-
-派生实际项目后，必须将 `template.isTemplate` 改为 `false`、替换全部占位符，并运行带
-`-Instantiation` 参数的严格检查。
+- 本仓为 2026-038-SolidEdgeMCP，独立 MCP 服务，不是 OneHistory 宿主模块。
+- 业务源码在 b-Code-SolidEdgeMCP，维护工具在 b-Code。
+- 虚拟环境在组件的 obj/venv；config、data 为不入库的本机生成目录。
+- 项目合同始终以 -Instantiation 严格模式验收。

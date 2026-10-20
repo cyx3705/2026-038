@@ -1,29 +1,45 @@
 {
   "schemaVersion": 1,
   "template": {
-    "isTemplate": true,
-    "source": "0000-000-Template",
+    "isTemplate": false,
+    "source": "0000-001-AIReady",
     "strictValidationArgument": "-Instantiation"
   },
   "project": {
-    "id": "0000-001",
-    "name": "AIReady",
-    "title": "OneHistory AI-Ready 项目模板",
+    "id": "2026-038",
+    "name": "SolidEdgeMCP",
+    "title": "Solid Edge AI MCP：通过 Python COM 控制 Siemens Solid Edge",
     "kind": [
-      "template",
-      "multidisciplinary"
+      "software",
+      "mcp-server",
+      "cad-automation"
     ],
-    "status": "template"
+    "status": "active",
+    "version": "0.1.0",
+    "branch": "main"
   },
   "paths": {
     "activeRoots": [
       "b-Office",
-      "b-Code"
+      "b-Code",
+      "b-Code-SolidEdgeMCP"
     ],
     "sourceRoots": [
+      "b-Code-SolidEdgeMCP/src",
+      "b-Code-SolidEdgeMCP/tests",
+      "b-Code-SolidEdgeMCP/scripts",
       "b-Code"
     ],
-    "generatedRoots": [],
+    "generatedRoots": [
+      "b-Code-SolidEdgeMCP/obj",
+      "b-Code-SolidEdgeMCP/config",
+      "b-Code-SolidEdgeMCP/data",
+      "b-Code-SolidEdgeMCP/dist",
+      "b-Code-SolidEdgeMCP/build",
+      "**/__pycache__",
+      "**/.pytest_cache",
+      "**/.ruff_cache"
+    ],
     "archiveRoots": [],
     "allowedRootDirectoryPrefixes": [
       "a-",
@@ -35,20 +51,31 @@
     "conventions": "b-Office/现行约定.md"
   },
   "commands": {
-    "setup": null,
+    "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code-SolidEdgeMCP\\scripts\\setup.ps1 -Dev",
     "build": null,
-    "test": null,
-    "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-ProjectContract.ps1",
-    "run": null,
-    "package": null
+    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-SolidEdgeMCP.ps1",
+    "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-ProjectContract.ps1 -Instantiation",
+    "run": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code-SolidEdgeMCP\\scripts\\start.ps1",
+    "package": null,
+    "liveTest": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-SolidEdgeMCP.ps1 -Live",
+    "doctor": ".\\b-Code-SolidEdgeMCP\\obj\\venv\\Scripts\\python.exe -m solid_edge_mcp --doctor"
   },
-  "externalDependencies": [],
+  "externalDependencies": [
+    "Windows x64 与已安装、已授权的 Siemens Solid Edge；当前实机版本 2020 / 220.00.00.104",
+    "Python 3.12 x64；pyproject.toml 的包兼容范围为 Python >=3.11",
+    "mcp、pywin32、Pillow：准确版本见 b-Code-SolidEdgeMCP/requirements.lock.txt",
+    "pytest、pytest-asyncio、ruff：开发依赖见 b-Code-SolidEdgeMCP/requirements-dev.lock.txt"
+  ],
   "contextExclusions": [
-    "b-Publish/**",
-    "**/bin/**",
     "**/obj/**",
-    "**/node_modules/**",
-    "**/.vs/**",
-    "artifacts/**"
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/.ruff_cache/**",
+    "**/*.egg-info/**",
+    "b-Code-SolidEdgeMCP/config/**",
+    "b-Code-SolidEdgeMCP/data/**",
+    "b-Code-SolidEdgeMCP/dist/**",
+    "b-Code-SolidEdgeMCP/build/**",
+    "**/.git/**"
   ]
 }

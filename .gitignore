@@ -98,3 +98,11 @@ Thumbs.db
 !z-*/
 !z-*/**
 # HistoryJanus managed end
+
+# SolidEdgeMCP project-specific generated state
+.ruff_cache/
+**/*.egg-info/
+b-Code-SolidEdgeMCP/config/
+b-Code-SolidEdgeMCP/data/
+b-Code-SolidEdgeMCP/dist/
+b-Code-SolidEdgeMCP/build/
