@@ -46,6 +46,10 @@ public sealed record ToolParameter(
     /// <summary>A required structured argument ("array" or "object") with its full JSON schema.</summary>
     public static ToolParameter Structured(string name, string type, JsonObject schema) => new(name, type, Extra: schema);
 
+    /// <summary>An optional structured argument; null or absent reads as null.</summary>
+    public static ToolParameter OptionalStructured(string name, string type, JsonObject schema) =>
+        new(name, type, false, null, Nullable: true, Extra: schema);
+
     public static ToolParameter Choice(string name, params string[] choices) => new(name, "string", Choices: choices);
 
     public static ToolParameter Choice(string name, string fallback, params string[] choices) =>
@@ -148,4 +152,6 @@ public sealed class ToolArguments(IReadOnlyDictionary<string, object?> values)
     public JsonElement? OptionalObject(string name) => (JsonElement?)values[name];
 
     public JsonElement Element(string name) => (JsonElement)values[name]!;
+
+    public JsonElement? OptionalElement(string name) => (JsonElement?)values[name];
 }

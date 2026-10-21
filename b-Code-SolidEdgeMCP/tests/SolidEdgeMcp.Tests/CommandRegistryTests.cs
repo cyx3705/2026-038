@@ -60,7 +60,7 @@ public sealed class CommandRegistryTests : IDisposable
         Install(BuiltCommands());
         var registry = new CommandRegistry(Dll, null);
         var loaded = registry.Load();
-        Assert.Equal(25, (int)loaded["command_count"]!);
+        Assert.Equal(30, (int)loaded["command_count"]!);
         var commands = registry.Describe()["commands"]!.AsArray();
         Assert.All(commands, c => Assert.True((bool)c!["enabled"]!));
         var box = registry.Describe("create_box");

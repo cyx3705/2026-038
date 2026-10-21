@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>SolidEdgeMcp.Commands</AssemblyName>
     <RootNamespace>SolidEdgeMcp.Commands</RootNamespace>
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
     <InvariantGlobalization>true</InvariantGlobalization>
     <OutDir>$(MSBuildThisFileDirectory)..\..\obj\commands\</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>

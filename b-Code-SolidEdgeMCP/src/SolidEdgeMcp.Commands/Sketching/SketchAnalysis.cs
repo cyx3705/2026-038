@@ -19,6 +19,8 @@ public sealed class Loop
 /// <summary>
 /// Topology and measures of a sketch: endpoints joined into loops, exact area and centroid
 /// (Green's theorem, arcs included), outer/hole nesting, and every defect found on the way.
+/// With a <see cref="SketchSpec"/>, relations are checked and dimensions measured as well.
+/// Construction elements and points take part in relations but never in regions.
 /// </summary>
 public sealed partial class SketchAnalysis
 {
@@ -28,6 +30,9 @@ public sealed partial class SketchAnalysis
     public Pt Min { get; private set; }
     public Pt Max { get; private set; }
 
+    /// <summary>Splines are measured along a stand-in curve, so areas are close but not exact.</summary>
+    public bool Approximate { get; private set; }
+
     /// <summary>Area of the region an extrusion would use: outer loops minus their holes.</summary>
     public double NetArea => Loops.Where(l => l.Closed).Sum(l => (l.Depth % 2 == 0 ? 1 : -1) * Math.Abs(l.SignedArea));
 
@@ -35,10 +40,12 @@ public sealed partial class SketchAnalysis
 
     private readonly double _tol;
 
-    public SketchAnalysis(List<Element> elements, double tolerance = Sketch.Tolerance)
+    public SketchAnalysis(List<Element> elements, double tolerance = Sketch.Tolerance, SketchSpec? spec = null, IEnumerable<Element>? references = null)
     {
         Elements = elements;
         _tol = tolerance;
+        Spec = spec;
+        References = references?.ToList() ?? [];
         Bounds();
         BuildLoops();
         foreach (var loop in Loops.Where(l => l.Closed))
@@ -50,16 +57,12 @@ public sealed partial class SketchAnalysis
         Loops.Clear();
         Loops.AddRange(ordered);
         Intersections();
+        Constraints();
     }
 
-    // ---- topology -------------------------------------------------------------------------
+    private IEnumerable<Element> Region => Elements.Where(e => e.Profile);
 
-    private static (Pt Start, Pt End)? Ends(Element element) => element switch
-    {
-        LineEl line => (line.Start, line.End),
-        ArcEl arc => (arc.Start, arc.End),
-        _ => null,
-    };
+    // ---- topology -------------------------------------------------------------------------
 
     private void BuildLoops()
     {
@@ -76,11 +79,11 @@ public sealed partial class SketchAnalysis
         }
 
         var edges = new List<(Element Element, int From, int To)>();
-        foreach (var element in Elements)
+        foreach (var element in Region)
         {
-            if (element is CircleEl)
+            if (element is CircleEl or EllipseEl or SplineEl { Closed: true })
                 Loops.Add(new Loop { Steps = [new Step(element, true)], Closed = true });
-            else if (Ends(element) is { } ends)
+            else if (Sketch.Ends(element) is { } ends)
                 edges.Add((element, Node(ends.Start), Node(ends.End)));
         }
         var touching = new List<int>[nodes.Count];
@@ -149,27 +152,43 @@ public sealed partial class SketchAnalysis
     // ---- measures -------------------------------------------------------------------------
 
     /// <summary>Contour integrals of (x dy - y dx)/2, x^2 dy and y^2 dx along one oriented step.</summary>
-    private static (double Area, double Mx, double My) Integrals(Step step)
+    private (double Area, double Mx, double My) Integrals(Step step)
     {
         switch (step.Element)
         {
             case LineEl line:
-            {
-                var (p, q) = step.Forward ? (line.Start, line.End) : (line.End, line.Start);
-                double dx = q.X - p.X, dy = q.Y - p.Y;
-                return ((p.X * q.Y - q.X * p.Y) / 2,
-                    dy * (p.X * p.X + p.X * dx + dx * dx / 3),
-                    dx * (p.Y * p.Y + p.Y * dy + dy * dy / 3));
-            }
+                return step.Forward ? Segment(line.Start, line.End) : Segment(line.End, line.Start);
             case ArcEl arc:
                 return step.Forward
                     ? ArcIntegrals(arc.Center, arc.Radius, arc.StartAngle, arc.EndAngle)
                     : ArcIntegrals(arc.Center, arc.Radius, arc.EndAngle, arc.StartAngle);
             case CircleEl circle:
                 return ArcIntegrals(circle.Center, circle.Radius, 0, 2 * Math.PI);
+            case SplineEl spline:
+            {
+                Approximate = true;
+                var points = Sketch.Sample(spline);
+                if (!step.Forward)
+                    points.Reverse();
+                (double, double, double) sum = (0, 0, 0);
+                for (var i = 1; i < points.Count; i++)
+                {
+                    var (a, x, y) = Segment(points[i - 1], points[i]);
+                    sum = (sum.Item1 + a, sum.Item2 + x, sum.Item3 + y);
+                }
+                return sum;
+            }
             default:
                 throw new InvalidOperationException(step.Element.Kind);
         }
+    }
+
+    private static (double Area, double Mx, double My) Segment(Pt p, Pt q)
+    {
+        double dx = q.X - p.X, dy = q.Y - p.Y;
+        return ((p.X * q.Y - q.X * p.Y) / 2,
+            dy * (p.X * p.X + p.X * dx + dx * dx / 3),
+            dx * (p.Y * p.Y + p.Y * dy + dy * dy / 3));
     }
 
     private static (double Area, double Mx, double My) ArcIntegrals(Pt c, double r, double t1, double t2)
@@ -188,8 +207,14 @@ public sealed partial class SketchAnalysis
         return (area, mx, my);
     }
 
-    private static void Measure(Loop loop)
+    private void Measure(Loop loop)
     {
+        if (loop.Steps is [{ Element: EllipseEl ellipse }])
+        {
+            loop.SignedArea = Math.PI * ellipse.MajorRadius * ellipse.MinorRadius;
+            loop.Centroid = ellipse.Center;
+            return;
+        }
         double area = 0, mx = 0, my = 0;
         foreach (var step in loop.Steps)
         {
@@ -204,32 +229,41 @@ public sealed partial class SketchAnalysis
 
     // ---- nesting --------------------------------------------------------------------------
 
-    /// <summary>Polyline of a loop in walk order; arcs split every 2 degrees or less.</summary>
+    /// <summary>Points along one element from start to end; arcs split every 2 degrees or less.</summary>
+    public static List<Pt> Trace(Element element)
+    {
+        switch (element)
+        {
+            case LineEl line:
+                return [line.Start, line.End];
+            case ArcEl arc:
+            {
+                var n = Math.Max(2, (int)Math.Ceiling(Math.Abs(arc.Sweep) / Sketch.Rad(2)));
+                return Enumerable.Range(0, n + 1).Select(i => Pt.Polar(arc.Center, arc.Radius, arc.StartAngle + arc.Sweep * i / n)).ToList();
+            }
+            case CircleEl circle:
+                return Enumerable.Range(0, 181).Select(i => Pt.Polar(circle.Center, circle.Radius, Sketch.Rad(2 * i))).ToList();
+            case EllipseEl ellipse:
+                return Sketch.Sample(ellipse);
+            case SplineEl spline:
+                return Sketch.Sample(spline);
+            case PointEl point:
+                return [point.At];
+            default:
+                return [];
+        }
+    }
+
+    /// <summary>Polyline of a loop in walk order.</summary>
     public static List<Pt> Polygon(Loop loop)
     {
         var points = new List<Pt>();
         foreach (var step in loop.Steps)
         {
-            switch (step.Element)
-            {
-                case LineEl line:
-                    points.Add(step.Forward ? line.Start : line.End);
-                    break;
-                case ArcEl arc:
-                {
-                    var n = Math.Max(2, (int)Math.Ceiling(Math.Abs(arc.Sweep) / Sketch.Rad(2)));
-                    for (var i = 0; i < n; i++)
-                    {
-                        var k = step.Forward ? i : n - i;
-                        points.Add(Pt.Polar(arc.Center, arc.Radius, arc.StartAngle + arc.Sweep * k / n));
-                    }
-                    break;
-                }
-                case CircleEl circle:
-                    for (var i = 0; i < 180; i++)
-                        points.Add(Pt.Polar(circle.Center, circle.Radius, Sketch.Rad(2 * i)));
-                    break;
-            }
+            var trace = Trace(step.Element);
+            if (!step.Forward)
+                trace.Reverse();
+            points.AddRange(trace.Take(trace.Count - 1));
         }
         return points;
     }
@@ -251,6 +285,8 @@ public sealed partial class SketchAnalysis
         LineEl line => (line.Start + line.End) * 0.5,
         ArcEl arc => arc.Mid,
         CircleEl circle => circle.Center + new Pt(circle.Radius, 0),
+        EllipseEl ellipse => ellipse.At(0),
+        SplineEl spline => Trace(spline)[Trace(spline).Count / 2],
         _ => default,
     };
 
@@ -274,10 +310,6 @@ public sealed partial class SketchAnalysis
         {
             switch (element)
             {
-                case LineEl line:
-                    points.Add(line.Start);
-                    points.Add(line.End);
-                    break;
                 case ArcEl arc:
                     points.Add(arc.Start);
                     points.Add(arc.End);
@@ -292,8 +324,22 @@ public sealed partial class SketchAnalysis
                     points.Add(circle.Center - new Pt(circle.Radius, circle.Radius));
                     points.Add(circle.Center + new Pt(circle.Radius, circle.Radius));
                     break;
+                case EllipseEl ellipse:
+                {
+                    double c = Math.Cos(ellipse.Angle), s = Math.Sin(ellipse.Angle);
+                    double a = ellipse.MajorRadius, b = ellipse.MinorRadius;
+                    var half = new Pt(Math.Sqrt(a * a * c * c + b * b * s * s), Math.Sqrt(a * a * s * s + b * b * c * c));
+                    points.Add(ellipse.Center - half);
+                    points.Add(ellipse.Center + half);
+                    break;
+                }
+                default:
+                    points.AddRange(Trace(element));
+                    break;
             }
         }
+        if (points.Count == 0)
+            points.Add(default);
         Min = new Pt(points.Min(p => p.X), points.Min(p => p.Y));
         Max = new Pt(points.Max(p => p.X), points.Max(p => p.Y));
     }

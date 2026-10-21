@@ -6,7 +6,7 @@
       "arguments": {},
       "result": {
         "connected": false,
-        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339"
+        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435"
       }
     },
     {
@@ -14,9 +14,9 @@
       "arguments": {},
       "result": {
         "connected": true,
-        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339",
+        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435",
         "version": "220.00.00.104",
-        "document_count": 1,
+        "document_count": 6,
         "started": false
       }
     },
@@ -24,9 +24,9 @@
       "command": "new_part",
       "arguments": {},
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
-        "name": "零件24",
-        "full_name": "零件24",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
+        "name": "零件35",
+        "full_name": "零件35",
         "type": 1,
         "dirty": false
       }
@@ -34,37 +34,83 @@
     {
       "command": "reference_planes",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "planes": [
           {
             "index": 1,
-            "name": "RefPlane_1"
+            "name": "RefPlane_1",
+            "origin_mm": [
+              0,
+              0,
+              0
+            ],
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "x_axis": [
+              1,
+              0,
+              0
+            ]
           },
           {
             "index": 2,
-            "name": "RefPlane_2"
+            "name": "RefPlane_2",
+            "origin_mm": [
+              0,
+              0,
+              0
+            ],
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "x_axis": [
+              0,
+              1,
+              0
+            ]
           },
           {
             "index": 3,
-            "name": "RefPlane_3"
+            "name": "RefPlane_3",
+            "origin_mm": [
+              0,
+              0,
+              0
+            ],
+            "normal": [
+              0,
+              -1,
+              0
+            ],
+            "x_axis": [
+              1,
+              0,
+              0
+            ]
           }
         ],
-        "coordinates": "Sketch coordinates are local to the chosen plane."
+        "coordinates": "Sketch coordinates are local to the chosen plane; sketch results give the exact plane_frame."
       }
     },
     {
       "command": "create_box",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "width_mm": 100,
         "depth_mm": 60,
         "height_mm": 20
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "operation": "add",
+        "expected_volume_mm3": null,
         "geometry": {
           "models": [
             {
@@ -96,7 +142,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "models": [
@@ -128,7 +174,7 @@
     {
       "command": "list_variables",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "variables": [
@@ -154,7 +200,7 @@
     {
       "command": "set_variable",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "name": "PhysicalProperties_Accuracy",
         "value": 0.98,
         "unit": "raw"
@@ -191,7 +237,7 @@
     {
       "command": "features",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "features": [
@@ -207,7 +253,7 @@
     {
       "command": "set_extrusion_depth",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "feature_name": "ExtrudedProtrusion_1",
         "depth_mm": 25
       },
@@ -256,7 +302,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "models": [
@@ -288,14 +334,14 @@
     {
       "command": "create_circle",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "radius_mm": 6,
         "x_mm": 50,
         "y_mm": 30
       },
       "result": {
-        "profile_id": "5b3fac55915a4b0b8ee8255eeeaffbea",
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "profile_id": "4fc8fb05ea81419fbd3d69e6fd59e5e1",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "validation_code": 0,
         "validation_passed": true,
         "note": "Extrusion verifies that the constructed loop produces the expected solid."
@@ -304,14 +350,15 @@
     {
       "command": "extrude",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
-        "profile_id": "5b3fac55915a4b0b8ee8255eeeaffbea",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
+        "profile_id": "4fc8fb05ea81419fbd3d69e6fd59e5e1",
         "distance_mm": 25,
         "operation": "cut"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "operation": "cut",
+        "expected_volume_mm3": null,
         "geometry": {
           "models": [
             {
@@ -343,7 +390,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "models": [
@@ -379,7 +426,7 @@
         "command": "geometry",
         "enabled": false,
         "default": true,
-        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\switches.json"
+        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\switches.json"
       }
     },
     {
@@ -389,7 +436,7 @@
         "command": "geometry",
         "enabled": true,
         "default": true,
-        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\switches.json"
+        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\switches.json"
       }
     },
     {
@@ -405,9 +452,9 @@
       "command": null,
       "result": {
         "assembly": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\obj\\commands\\SolidEdgeMcp.Commands.dll",
-        "hash": "1f5f1aa6b9b5",
-        "version": "0.4.0+91ffb6b20cebe97c7efe480a55d29d0bc5999175",
-        "command_count": 25,
+        "hash": "232a1a37f17b",
+        "version": "0.5.0+2ea7444e935907762bb30fa03a7f5049961a0f06",
+        "command_count": 30,
         "added": [
           "capture_viewport",
           "close_document",
@@ -415,10 +462,13 @@
           "create_box",
           "create_circle",
           "create_cylinder",
+          "create_plane",
           "create_rectangle",
           "disconnect",
+          "edit_sketch",
           "export_step",
           "extrude",
+          "faces",
           "features",
           "geometry",
           "get_document",
@@ -427,11 +477,13 @@
           "new_part",
           "open_document",
           "reference_planes",
+          "revolve",
           "save_document",
           "set_extrusion_depth",
           "set_variable",
           "set_view",
           "sketch",
+          "sketch_dimensions",
           "status",
           "view_sketch"
         ],
@@ -441,7 +493,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "models": [
@@ -473,7 +525,7 @@
     {
       "command": "features",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
         "features": [
@@ -495,73 +547,73 @@
     {
       "command": "set_view",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "orientation": "Iso"
       }
     },
     {
       "command": "capture_viewport",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "path": "plate-with-hole.png"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.png",
-        "size_bytes": 41621
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.png",
+        "size_bytes": 31183
       }
     },
     {
       "command": "save_document",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "path": "plate-with-hole.par"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par",
         "type": 1,
         "dirty": false,
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par",
         "size_bytes": 180224
       }
     },
     {
       "command": "export_step",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "path": "plate-with-hole.step"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "format": "STEP",
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.step",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.step",
         "size_bytes": 9413
       }
     },
     {
       "command": "close_document",
       "arguments": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828"
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02"
       },
       "result": {
-        "document_id": "18f4de1eea0a48d5a3d4754e6925b828",
+        "document_id": "334c6cab94af42fc8edac4632e8c3c02",
         "closed": true
       }
     },
     {
       "command": "open_document",
       "arguments": {
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par"
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par",
         "type": 1,
         "dirty": false
       }
@@ -569,12 +621,12 @@
     {
       "command": "get_document",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb"
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par",
         "type": 1,
         "dirty": false
       }
@@ -585,16 +637,51 @@
       "result": {
         "documents": [
           {
-            "document_id": "f9b976506e6e41a1864ecb7b7585e4b5",
-            "name": "零件23",
-            "full_name": "零件23",
+            "document_id": "2e879561058c4517a5a84ddc8db67c83",
+            "name": "零件27",
+            "full_name": "零件27",
             "type": 1,
-            "dirty": false
+            "dirty": true
           },
           {
-            "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+            "document_id": "ad77cf3ea8b04853893843120fea614d",
+            "name": "零件28",
+            "full_name": "零件28",
+            "type": 1,
+            "dirty": true
+          },
+          {
+            "document_id": "cca49d88f77e43188f1c992df4f66d9e",
+            "name": "零件31",
+            "full_name": "零件31",
+            "type": 1,
+            "dirty": true
+          },
+          {
+            "document_id": "2b61cc19e00c4d908acf5417404b7a33",
+            "name": "零件32",
+            "full_name": "零件32",
+            "type": 1,
+            "dirty": true
+          },
+          {
+            "document_id": "6e1a4b7ba02e4f15ade4c90ab661c824",
+            "name": "零件33",
+            "full_name": "零件33",
+            "type": 1,
+            "dirty": true
+          },
+          {
+            "document_id": "746a0f5b22af497885e9937acf9c4d18",
+            "name": "零件34",
+            "full_name": "零件34",
+            "type": 1,
+            "dirty": true
+          },
+          {
+            "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
             "name": "plate-with-hole.par",
-            "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339\\plate-with-hole.par",
+            "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435\\plate-with-hole.par",
             "type": 1,
             "dirty": false
           }
@@ -604,7 +691,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb"
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0"
       },
       "result": {
         "models": [
@@ -637,9 +724,9 @@
       "command": "new_part",
       "arguments": {},
       "result": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
-        "name": "零件25",
-        "full_name": "零件25",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
+        "name": "零件36",
+        "full_name": "零件36",
         "type": 1,
         "dirty": false
       }
@@ -647,13 +734,14 @@
     {
       "command": "create_cylinder",
       "arguments": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "radius_mm": 10,
         "height_mm": 30
       },
       "result": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "operation": "add",
+        "expected_volume_mm3": null,
         "geometry": {
           "models": [
             {
@@ -685,7 +773,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe"
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b"
       },
       "result": {
         "models": [
@@ -717,13 +805,13 @@
     {
       "command": "create_rectangle",
       "arguments": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "width_mm": 5,
         "height_mm": 5
       },
       "result": {
-        "profile_id": "d904bdc7647e4f30a6bdeb6ba6d114ae",
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "profile_id": "cc4647c071bf47bc8611e64b7d74cc91",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "validation_code": 0,
         "validation_passed": true,
         "note": "Extrusion verifies that the constructed loop produces the expected solid."
@@ -732,13 +820,14 @@
     {
       "command": "extrude",
       "arguments": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
-        "profile_id": "d904bdc7647e4f30a6bdeb6ba6d114ae",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
+        "profile_id": "cc4647c071bf47bc8611e64b7d74cc91",
         "distance_mm": 40
       },
       "result": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "operation": "add",
+        "expected_volume_mm3": null,
         "geometry": {
           "models": [
             {
@@ -770,7 +859,7 @@
     {
       "command": "geometry",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb"
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0"
       },
       "result": {
         "models": [
@@ -802,11 +891,11 @@
     {
       "command": "close_document",
       "arguments": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "discard_changes": true
       },
       "result": {
-        "document_id": "5ee4d08cc03b4a45b6b86aa699e56afe",
+        "document_id": "543d8758b8c94bd78cad6c738737ec4b",
         "closed": true
       }
     },
@@ -814,9 +903,9 @@
       "command": "new_part",
       "arguments": {},
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
-        "name": "零件26",
-        "full_name": "零件26",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
+        "name": "零件37",
+        "full_name": "零件37",
         "type": 1,
         "dirty": false
       }
@@ -824,7 +913,7 @@
     {
       "command": "sketch",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "entities": [
           {
             "id": "L1",
@@ -890,12 +979,35 @@
         ]
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
-        "profile_id": "5628e79ab1314eb08e0cf4e01eb3edf8",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
+        "profile_id": "667e257a2be04564ad719ba1e83df72f",
         "sketch_index": 1,
         "plane_index": 1,
         "validation_code": 0,
         "max_deviation_mm": 0,
+        "fully_constrained": false,
+        "plane_frame": {
+          "origin_mm": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
         "entities": [
           {
             "id": "L1",
@@ -1024,13 +1136,14 @@
     {
       "command": "view_sketch",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294"
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6"
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "sketches": [
           {
             "sketch_index": 1,
+            "profile_id": "667e257a2be04564ad719ba1e83df72f",
             "entity_count": 5,
             "closed_loops": 2,
             "net_area_mm2": 1706.81415,
@@ -1042,13 +1155,14 @@
     {
       "command": "view_sketch",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294"
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6"
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "sketches": [
           {
             "sketch_index": 1,
+            "profile_id": "667e257a2be04564ad719ba1e83df72f",
             "entity_count": 5,
             "closed_loops": 2,
             "net_area_mm2": 1706.81415,
@@ -1060,13 +1174,14 @@
     {
       "command": "extrude",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
-        "profile_id": "5628e79ab1314eb08e0cf4e01eb3edf8",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
+        "profile_id": "667e257a2be04564ad719ba1e83df72f",
         "distance_mm": 10
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "operation": "add",
+        "expected_volume_mm3": 17068.141502220526,
         "geometry": {
           "models": [
             {
@@ -1098,15 +1213,15 @@
     {
       "command": "view_sketch",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "sketch_index": 1
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
-        "sketch_index": 1,
+        "profile_id": null,
+        "fully_constrained": false,
         "entities": [
           {
-            "id": "Line2d 318",
+            "id": "L1",
             "se_name": "Line2d 318",
             "type": "line",
             "start": [
@@ -1120,35 +1235,7 @@
             "length": 80
           },
           {
-            "id": "Line2d 329",
-            "se_name": "Line2d 329",
-            "type": "line",
-            "start": [
-              80,
-              20
-            ],
-            "end": [
-              0,
-              20
-            ],
-            "length": 80
-          },
-          {
-            "id": "Line2d 330",
-            "se_name": "Line2d 330",
-            "type": "line",
-            "start": [
-              0,
-              20
-            ],
-            "end": [
-              0,
-              0
-            ],
-            "length": 20
-          },
-          {
-            "id": "Arc2d 328",
+            "id": "A1",
             "se_name": "Arc2d 328",
             "type": "arc",
             "center": [
@@ -1169,7 +1256,35 @@
             "length": 31.415927
           },
           {
-            "id": "Circle2d 331",
+            "id": "L2",
+            "se_name": "Line2d 329",
+            "type": "line",
+            "start": [
+              80,
+              20
+            ],
+            "end": [
+              0,
+              20
+            ],
+            "length": 80
+          },
+          {
+            "id": "L3",
+            "se_name": "Line2d 330",
+            "type": "line",
+            "start": [
+              0,
+              20
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "length": 20
+          },
+          {
+            "id": "H1",
             "se_name": "Circle2d 331",
             "type": "circle",
             "center": [
@@ -1182,10 +1297,10 @@
         "loops": [
           {
             "entities": [
-              "Line2d 318",
-              "Arc2d 328",
-              "Line2d 329",
-              "Line2d 330"
+              "L1",
+              "A1",
+              "L2",
+              "L3"
             ],
             "closed": true,
             "role": "outer",
@@ -1198,7 +1313,7 @@
           },
           {
             "entities": [
-              "Circle2d 331"
+              "H1"
             ],
             "closed": true,
             "role": "hole",
@@ -1226,72 +1341,3435 @@
           ]
         },
         "issues": [],
-        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-7.2 -27.2 104.4 34.4' width='640' height='211' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.288'><line x1='0' y1='0' x2='10.8' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-10.8' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M 0 0 L 80 0 A 10 10 0 0 0 80 -20 L 0 -20 L 0 0 Z M 44 -10 A 4 4 0 0 0 36 -10 A 4 4 0 0 0 44 -10 Z'/><g id='elements' fill='none' stroke-width='0.36' stroke-linecap='round'><path id='Line2d 318' data-se='Line2d 318' stroke='#1f4e79' d='M 0 0 L 80 0'/><path id='Line2d 329' data-se='Line2d 329' stroke='#1f4e79' d='M 80 -20 L 0 -20'/><path id='Line2d 330' data-se='Line2d 330' stroke='#1f4e79' d='M 0 -20 L 0 0'/><path id='Arc2d 328' data-se='Arc2d 328' stroke='#1f4e79' d='M 80 0 A 10 10 0 0 0 80 -20'/><path id='Circle2d 331' data-se='Circle2d 331' stroke='#1f4e79' d='M 44 -10 A 4 4 0 0 0 36 -10 A 4 4 0 0 0 44 -10'/></g><g id='labels' font-size='3.214286' fill='#333' text-anchor='middle'><text x='40' y='-1.285714'>Line2d 318</text><text x='40' y='-21.285714'>Line2d 329</text><text x='0' y='-11.285714'>Line2d 330</text><text x='90' y='-11.285714'>Arc2d 328</text><text x='42.828427' y='-14.114141'>Circle2d 331</text></g></svg>"
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-7.2 -27.2 104.4 34.4' width='640' height='211' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.288'><line x1='0' y1='0' x2='10.8' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-10.8' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M 0 0 L 80 0 A 10 10 0 0 0 80 -20 L 0 -20 L 0 0 Z M 44 -10 A 4 4 0 0 0 36 -10 A 4 4 0 0 0 44 -10 Z'/><g id='elements' fill='none' stroke-width='0.36' stroke-linecap='round'><path id='L1' data-se='Line2d 318' stroke='#1f4e79' d='M 0 0 L 80 0'/><path id='A1' data-se='Arc2d 328' stroke='#1f4e79' d='M 80 0 A 10 10 0 0 0 80 -20'/><path id='L2' data-se='Line2d 329' stroke='#1f4e79' d='M 80 -20 L 0 -20'/><path id='L3' data-se='Line2d 330' stroke='#1f4e79' d='M 0 -20 L 0 0'/><path id='H1' data-se='Circle2d 331' stroke='#1f4e79' d='M 44 -10 A 4 4 0 0 0 36 -10 A 4 4 0 0 0 44 -10'/></g><g id='labels' font-size='3.214286' fill='#333' text-anchor='middle'><text x='40' y='-1.285714'>L1</text><text x='90' y='-11.285714'>A1</text><text x='40' y='-21.285714'>L2</text><text x='0' y='-11.285714'>L3</text><text x='42.828427' y='-14.114141'>H1</text></g></svg>",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
+        "sketch_index": 1
       }
     },
     {
       "command": "close_document",
       "arguments": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
         "discard_changes": true
       },
       "result": {
-        "document_id": "10eea253633442d0911ba5701d91e294",
+        "document_id": "b02053ceeafd4a1db605b7f6f3a915c6",
+        "closed": true
+      }
+    },
+    {
+      "command": "new_part",
+      "arguments": {},
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "name": "零件38",
+        "full_name": "零件38",
+        "type": 1,
+        "dirty": false
+      }
+    },
+    {
+      "command": "sketch",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "entities": [
+          {
+            "id": "R",
+            "type": "rectangle",
+            "center": [
+              0,
+              0
+            ],
+            "size": [
+              60,
+              40
+            ],
+            "corner_radius": 5
+          },
+          {
+            "id": "H1",
+            "type": "circle",
+            "center": [
+              -20,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "H2",
+            "type": "circle",
+            "center": [
+              20,
+              0
+            ],
+            "radius": 3
+          }
+        ],
+        "relations": [
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f2"
+            ]
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f3"
+            ]
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f4"
+            ]
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "H1",
+              "H2"
+            ]
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H1",
+              "center"
+            ],
+            "target": "@x_axis"
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H2",
+              "center"
+            ],
+            "target": "@x_axis"
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "distance",
+            "from": "R.l",
+            "to": "R.r",
+            "name": "W"
+          },
+          {
+            "type": "distance",
+            "from": "R.b",
+            "to": "R.t",
+            "name": "H"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": "R.l"
+          },
+          {
+            "type": "distance",
+            "from": "@x_axis",
+            "to": "R.b"
+          },
+          {
+            "type": "radius",
+            "entity": "R.f1",
+            "name": "Rf"
+          },
+          {
+            "type": "diameter",
+            "entity": "H1",
+            "name": "D"
+          },
+          {
+            "type": "distance",
+            "from": [
+              "H1",
+              "center"
+            ],
+            "to": [
+              "H2",
+              "center"
+            ],
+            "axis": "x",
+            "name": "Pitch"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": [
+              "H1",
+              "center"
+            ]
+          }
+        ]
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "sketch_index": 1,
+        "plane_index": 1,
+        "validation_code": 0,
+        "max_deviation_mm": 0,
+        "fully_constrained": true,
+        "plane_frame": {
+          "origin_mm": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "entities": [
+          {
+            "id": "R.b",
+            "se_name": "Line2d 331",
+            "type": "line",
+            "start": [
+              -25,
+              -20
+            ],
+            "end": [
+              25,
+              -20
+            ],
+            "length": 50,
+            "group": "R"
+          },
+          {
+            "id": "R.r",
+            "se_name": "Line2d 332",
+            "type": "line",
+            "start": [
+              30,
+              -15
+            ],
+            "end": [
+              30,
+              15
+            ],
+            "length": 30,
+            "group": "R"
+          },
+          {
+            "id": "R.t",
+            "se_name": "Line2d 333",
+            "type": "line",
+            "start": [
+              25,
+              20
+            ],
+            "end": [
+              -25,
+              20
+            ],
+            "length": 50,
+            "group": "R"
+          },
+          {
+            "id": "R.l",
+            "se_name": "Line2d 334",
+            "type": "line",
+            "start": [
+              -30,
+              15
+            ],
+            "end": [
+              -30,
+              -15
+            ],
+            "length": 30,
+            "group": "R"
+          },
+          {
+            "id": "H1",
+            "se_name": "Circle2d 335",
+            "type": "circle",
+            "center": [
+              -20,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "H2",
+            "se_name": "Circle2d 336",
+            "type": "circle",
+            "center": [
+              20,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "R.f1",
+            "se_name": "Arc2d 337",
+            "type": "arc",
+            "center": [
+              -25,
+              -15
+            ],
+            "radius": 5,
+            "start": [
+              -25,
+              -20
+            ],
+            "end": [
+              -30,
+              -15
+            ],
+            "start_angle": 270,
+            "sweep_angle": -90,
+            "length": 7.853982,
+            "group": "R"
+          },
+          {
+            "id": "R.f2",
+            "se_name": "Arc2d 338",
+            "type": "arc",
+            "center": [
+              25,
+              -15
+            ],
+            "radius": 5,
+            "start": [
+              25,
+              -20
+            ],
+            "end": [
+              30,
+              -15
+            ],
+            "start_angle": 270,
+            "sweep_angle": 90,
+            "length": 7.853982,
+            "group": "R"
+          },
+          {
+            "id": "R.f3",
+            "se_name": "Arc2d 339",
+            "type": "arc",
+            "center": [
+              25,
+              15
+            ],
+            "radius": 5,
+            "start": [
+              30,
+              15
+            ],
+            "end": [
+              25,
+              20
+            ],
+            "start_angle": 0,
+            "sweep_angle": 90,
+            "length": 7.853982,
+            "group": "R"
+          },
+          {
+            "id": "R.f4",
+            "se_name": "Arc2d 340",
+            "type": "arc",
+            "center": [
+              -25,
+              15
+            ],
+            "radius": 5,
+            "start": [
+              -25,
+              20
+            ],
+            "end": [
+              -30,
+              15
+            ],
+            "start_angle": 90,
+            "sweep_angle": 90,
+            "length": 7.853982,
+            "group": "R"
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "R.b",
+              "R.f2",
+              "R.r",
+              "R.f3",
+              "R.t",
+              "R.f4",
+              "R.l",
+              "R.f1"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 2378.539816,
+            "centroid_mm": [
+              0,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "H1"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              -20,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "H2"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              20,
+              0
+            ]
+          }
+        ],
+        "net_area_mm2": 2321.991149,
+        "bbox_mm": {
+          "min": [
+            -30,
+            -20
+          ],
+          "max": [
+            30,
+            20
+          ],
+          "size": [
+            60,
+            40
+          ]
+        },
+        "relations": [
+          {
+            "type": "horizontal",
+            "entity": "R.b",
+            "satisfied": true
+          },
+          {
+            "type": "horizontal",
+            "entity": "R.t",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.r",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.l",
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "H1",
+              "H2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H1",
+              "center"
+            ],
+            "target": "@x_axis",
+            "satisfied": true
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H2",
+              "center"
+            ],
+            "target": "@x_axis",
+            "satisfied": true
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "distance",
+            "name": "W",
+            "from": "R.l",
+            "to": "R.r",
+            "axis": "aligned",
+            "value": 60,
+            "unit": "mm",
+            "variable": "W"
+          },
+          {
+            "type": "distance",
+            "name": "H",
+            "from": "R.b",
+            "to": "R.t",
+            "axis": "aligned",
+            "value": 40,
+            "unit": "mm",
+            "variable": "H"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": "R.l",
+            "axis": "aligned",
+            "value": 30,
+            "unit": "mm",
+            "variable": "V370"
+          },
+          {
+            "type": "distance",
+            "from": "@x_axis",
+            "to": "R.b",
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V371"
+          },
+          {
+            "type": "radius",
+            "name": "Rf",
+            "entity": "R.f1",
+            "value": 5,
+            "unit": "mm",
+            "variable": "Rf"
+          },
+          {
+            "type": "diameter",
+            "name": "D",
+            "entity": "H1",
+            "value": 6,
+            "unit": "mm",
+            "variable": "D"
+          },
+          {
+            "type": "distance",
+            "name": "Pitch",
+            "from": [
+              "H1",
+              "center"
+            ],
+            "to": [
+              "H2",
+              "center"
+            ],
+            "axis": "x",
+            "value": 40,
+            "unit": "mm",
+            "variable": "Pitch"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": [
+              "H1",
+              "center"
+            ],
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V375"
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-34.8 -24.8 69.6 49.6' width='640' height='456' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.192'><line x1='0' y1='0' x2='7.2' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-7.2' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M -25 20 L 25 20 A 5 5 0 0 0 30 15 L 30 -15 A 5 5 0 0 0 25 -20 L -25 -20 A 5 5 0 0 0 -30 -15 L -30 15 A 5 5 0 0 0 -25 20 Z M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0 Z M 23 0 A 3 3 0 0 0 17 0 A 3 3 0 0 0 23 0 Z'/><g id='references' fill='none' stroke='#8a8a8a' stroke-width='0.144' stroke-dasharray='1.92 0.72 0.24 0.72'><path id='@y_axis' d='M 0 54 L 0 -54'/><path id='@x_axis' d='M -57 0 L 57 0'/></g><g id='elements' fill='none' stroke-width='0.24' stroke-linecap='round'><path id='R.b' data-se='Line2d 331' stroke='#1f4e79' d='M -25 20 L 25 20'/><path id='R.r' data-se='Line2d 332' stroke='#1f4e79' d='M 30 15 L 30 -15'/><path id='R.t' data-se='Line2d 333' stroke='#1f4e79' d='M 25 -20 L -25 -20'/><path id='R.l' data-se='Line2d 334' stroke='#1f4e79' d='M -30 -15 L -30 15'/><path id='H1' data-se='Circle2d 335' stroke='#1f4e79' d='M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0'/><path id='H2' data-se='Circle2d 336' stroke='#1f4e79' d='M 23 0 A 3 3 0 0 0 17 0 A 3 3 0 0 0 23 0'/><path id='R.f1' data-se='Arc2d 337' stroke='#1f4e79' d='M -25 20 A 5 5 0 0 1 -30 15'/><path id='R.f2' data-se='Arc2d 338' stroke='#1f4e79' d='M 25 20 A 5 5 0 0 0 30 15'/><path id='R.f3' data-se='Arc2d 339' stroke='#1f4e79' d='M 30 -15 A 5 5 0 0 0 25 -20'/><path id='R.f4' data-se='Arc2d 340' stroke='#1f4e79' d='M -25 -20 A 5 5 0 0 0 -30 -15'/></g><g id='labels' font-size='2.142857' fill='#333' text-anchor='middle'><text x='0' y='19.142857'>R.b</text><text x='30' y='-0.857143'>R.r</text><text x='0' y='-20.857143'>R.t</text><text x='-30' y='-0.857143'>R.l</text><text x='-17.87868' y='-2.978463'>H1</text><text x='22.12132' y='-2.978463'>H2</text><text x='-28.535534' y='17.678391'>R.f1</text><text x='28.535534' y='17.678391'>R.f2</text><text x='28.535534' y='-19.392677'>R.f3</text><text x='-28.535534' y='-19.392677'>R.f4</text></g><g id='dimensions' font-size='1.928571' fill='#7a4f01' text-anchor='middle'><text x='0' y='2.357143'>W=60</text><text x='0' y='4.714286'>H=40</text><text x='-15' y='2.357143'>30</text><text x='0' y='12.357143'>20</text><text x='-28.535534' y='20.892677'>Rf=R5</text><text x='-17.87868' y='4.950108'>D=⌀6</text><text x='0' y='7.071429'>Pitch=40</text><text x='-10' y='2.357143'>20</text></g></svg>"
+      }
+    },
+    {
+      "command": "sketch_dimensions",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "set": {
+          "W": 80,
+          "H": 30,
+          "Pitch": 50,
+          "Rf": 3
+        }
+      },
+      "result": {
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "fully_constrained": true,
+        "entities": [
+          {
+            "id": "R.b",
+            "se_name": "Line2d 331",
+            "type": "line",
+            "start": [
+              -27,
+              -20
+            ],
+            "end": [
+              47,
+              -20
+            ],
+            "length": 74,
+            "group": "R"
+          },
+          {
+            "id": "R.r",
+            "se_name": "Line2d 332",
+            "type": "line",
+            "start": [
+              50,
+              -17
+            ],
+            "end": [
+              50,
+              7
+            ],
+            "length": 24,
+            "group": "R"
+          },
+          {
+            "id": "R.t",
+            "se_name": "Line2d 333",
+            "type": "line",
+            "start": [
+              47,
+              10
+            ],
+            "end": [
+              -27,
+              10
+            ],
+            "length": 74,
+            "group": "R"
+          },
+          {
+            "id": "R.l",
+            "se_name": "Line2d 334",
+            "type": "line",
+            "start": [
+              -30,
+              7
+            ],
+            "end": [
+              -30,
+              -17
+            ],
+            "length": 24,
+            "group": "R"
+          },
+          {
+            "id": "H1",
+            "se_name": "Circle2d 335",
+            "type": "circle",
+            "center": [
+              -20,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "H2",
+            "se_name": "Circle2d 336",
+            "type": "circle",
+            "center": [
+              30,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "R.f1",
+            "se_name": "Arc2d 337",
+            "type": "arc",
+            "center": [
+              -27,
+              -17
+            ],
+            "radius": 3,
+            "start": [
+              -27,
+              -20
+            ],
+            "end": [
+              -30,
+              -17
+            ],
+            "start_angle": 270,
+            "sweep_angle": -90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f2",
+            "se_name": "Arc2d 338",
+            "type": "arc",
+            "center": [
+              47,
+              -17
+            ],
+            "radius": 3,
+            "start": [
+              47,
+              -20
+            ],
+            "end": [
+              50,
+              -17
+            ],
+            "start_angle": 270,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f3",
+            "se_name": "Arc2d 339",
+            "type": "arc",
+            "center": [
+              47,
+              7
+            ],
+            "radius": 3,
+            "start": [
+              50,
+              7
+            ],
+            "end": [
+              47,
+              10
+            ],
+            "start_angle": 0,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f4",
+            "se_name": "Arc2d 340",
+            "type": "arc",
+            "center": [
+              -27,
+              7
+            ],
+            "radius": 3,
+            "start": [
+              -27,
+              10
+            ],
+            "end": [
+              -30,
+              7
+            ],
+            "start_angle": 90,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "R.b",
+              "R.f2",
+              "R.r",
+              "R.f3",
+              "R.t",
+              "R.f4",
+              "R.l",
+              "R.f1"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 2392.274334,
+            "centroid_mm": [
+              10,
+              -5
+            ]
+          },
+          {
+            "entities": [
+              "H1"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              -20,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "H2"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              30,
+              0
+            ]
+          }
+        ],
+        "net_area_mm2": 2335.725666,
+        "bbox_mm": {
+          "min": [
+            -30,
+            -20
+          ],
+          "max": [
+            50,
+            10
+          ],
+          "size": [
+            80,
+            30
+          ]
+        },
+        "relations": [
+          {
+            "type": "horizontal",
+            "entity": "R.b",
+            "satisfied": true
+          },
+          {
+            "type": "horizontal",
+            "entity": "R.t",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.r",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.l",
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "H1",
+              "H2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H1",
+              "center"
+            ],
+            "target": "@x_axis",
+            "satisfied": true
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H2",
+              "center"
+            ],
+            "target": "@x_axis",
+            "satisfied": true
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "distance",
+            "name": "W",
+            "from": "R.l",
+            "to": "R.r",
+            "axis": "aligned",
+            "value": 80,
+            "unit": "mm",
+            "variable": "W",
+            "se_value": 80
+          },
+          {
+            "type": "distance",
+            "name": "H",
+            "from": "R.b",
+            "to": "R.t",
+            "axis": "aligned",
+            "value": 30,
+            "unit": "mm",
+            "variable": "H",
+            "se_value": 30
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": "R.l",
+            "axis": "aligned",
+            "value": 30,
+            "unit": "mm",
+            "variable": "V370",
+            "se_value": 30
+          },
+          {
+            "type": "distance",
+            "from": "@x_axis",
+            "to": "R.b",
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V371",
+            "se_value": 20
+          },
+          {
+            "type": "radius",
+            "name": "Rf",
+            "entity": "R.f1",
+            "value": 3,
+            "unit": "mm",
+            "variable": "Rf",
+            "se_value": 3
+          },
+          {
+            "type": "diameter",
+            "name": "D",
+            "entity": "H1",
+            "value": 6,
+            "unit": "mm",
+            "variable": "D",
+            "se_value": 6
+          },
+          {
+            "type": "distance",
+            "name": "Pitch",
+            "from": [
+              "H1",
+              "center"
+            ],
+            "to": [
+              "H2",
+              "center"
+            ],
+            "axis": "x",
+            "value": 50,
+            "unit": "mm",
+            "variable": "Pitch",
+            "se_value": 50
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": [
+              "H1",
+              "center"
+            ],
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V375",
+            "se_value": 20
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-36.4 -16.4 92.8 42.8' width='640' height='295' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.256'><line x1='0' y1='0' x2='9.6' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-9.6' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M -27 20 L 47 20 A 3 3 0 0 0 50 17 L 50 -7 A 3 3 0 0 0 47 -10 L -27 -10 A 3 3 0 0 0 -30 -7 L -30 17 A 3 3 0 0 0 -27 20 Z M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0 Z M 33 0 A 3 3 0 0 0 27 0 A 3 3 0 0 0 33 0 Z'/><g id='references' fill='none' stroke='#8a8a8a' stroke-width='0.192' stroke-dasharray='2.56 0.96 0.32 0.96'><path id='@y_axis' d='M 0 54 L 0 -54'/><path id='@x_axis' d='M -57 0 L 57 0'/></g><g id='elements' fill='none' stroke-width='0.32' stroke-linecap='round'><path id='R.b' data-se='Line2d 331' stroke='#1f4e79' d='M -27 20 L 47 20'/><path id='R.r' data-se='Line2d 332' stroke='#1f4e79' d='M 50 17 L 50 -7'/><path id='R.t' data-se='Line2d 333' stroke='#1f4e79' d='M 47 -10 L -27 -10'/><path id='R.l' data-se='Line2d 334' stroke='#1f4e79' d='M -30 -7 L -30 17'/><path id='H1' data-se='Circle2d 335' stroke='#1f4e79' d='M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0'/><path id='H2' data-se='Circle2d 336' stroke='#1f4e79' d='M 33 0 A 3 3 0 0 0 27 0 A 3 3 0 0 0 33 0'/><path id='R.f1' data-se='Arc2d 337' stroke='#1f4e79' d='M -27 20 A 3 3 0 0 1 -30 17'/><path id='R.f2' data-se='Arc2d 338' stroke='#1f4e79' d='M 47 20 A 3 3 0 0 0 50 17'/><path id='R.f3' data-se='Arc2d 339' stroke='#1f4e79' d='M 50 -7 A 3 3 0 0 0 47 -10'/><path id='R.f4' data-se='Arc2d 340' stroke='#1f4e79' d='M -27 -10 A 3 3 0 0 0 -30 -7'/></g><g id='labels' font-size='2.857143' fill='#333' text-anchor='middle'><text x='10' y='18.857143'>R.b</text><text x='50' y='3.857143'>R.r</text><text x='10' y='-11.142857'>R.t</text><text x='-30' y='3.857143'>R.l</text><text x='-17.87868' y='-3.264177'>H1</text><text x='32.12132' y='-3.264177'>H2</text><text x='-29.12132' y='17.978463'>R.f1</text><text x='49.12132' y='17.978463'>R.f2</text><text x='49.12132' y='-10.264177'>R.f3</text><text x='-29.12132' y='-10.264177'>R.f4</text></g><g id='dimensions' font-size='2.571429' fill='#7a4f01' text-anchor='middle'><text x='10' y='8.142857'>W=80</text><text x='10' y='14.428571'>H=30</text><text x='-15' y='5.642857'>30</text><text x='5' y='13.142857'>20</text><text x='-29.12132' y='22.264177'>Rf=R3</text><text x='-17.87868' y='1.021537'>D=⌀6</text><text x='5' y='3.142857'>Pitch=50</text><text x='-10' y='3.142857'>20</text></g></svg>",
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "sketch_index": 1
+      }
+    },
+    {
+      "command": "edit_sketch",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "operations": [
+          {
+            "op": "delete",
+            "entities": [
+              "H2"
+            ]
+          },
+          {
+            "op": "add",
+            "entities": [
+              {
+                "id": "S",
+                "type": "slot",
+                "center": [
+                  15,
+                  0
+                ],
+                "length": 20,
+                "width": 8
+              }
+            ]
+          },
+          {
+            "op": "mirror",
+            "entities": [
+              "H1"
+            ],
+            "axis": [
+              [
+                10,
+                -50
+              ],
+              [
+                10,
+                50
+              ]
+            ],
+            "suffix": "_r"
+          }
+        ]
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "sketch_index": 1,
+        "plane_index": 1,
+        "validation_code": 0,
+        "max_deviation_mm": 0,
+        "fully_constrained": false,
+        "plane_frame": {
+          "origin_mm": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "entities": [
+          {
+            "id": "R.b",
+            "se_name": "Line2d 385",
+            "type": "line",
+            "start": [
+              -27,
+              -20
+            ],
+            "end": [
+              47,
+              -20
+            ],
+            "length": 74,
+            "group": "R"
+          },
+          {
+            "id": "R.r",
+            "se_name": "Line2d 386",
+            "type": "line",
+            "start": [
+              50,
+              -17
+            ],
+            "end": [
+              50,
+              7
+            ],
+            "length": 24,
+            "group": "R"
+          },
+          {
+            "id": "R.t",
+            "se_name": "Line2d 387",
+            "type": "line",
+            "start": [
+              47,
+              10
+            ],
+            "end": [
+              -27,
+              10
+            ],
+            "length": 74,
+            "group": "R"
+          },
+          {
+            "id": "R.l",
+            "se_name": "Line2d 388",
+            "type": "line",
+            "start": [
+              -30,
+              7
+            ],
+            "end": [
+              -30,
+              -17
+            ],
+            "length": 24,
+            "group": "R"
+          },
+          {
+            "id": "H1",
+            "se_name": "Circle2d 389",
+            "type": "circle",
+            "center": [
+              -20,
+              0
+            ],
+            "radius": 3
+          },
+          {
+            "id": "R.f1",
+            "se_name": "Arc2d 390",
+            "type": "arc",
+            "center": [
+              -27,
+              -17
+            ],
+            "radius": 3,
+            "start": [
+              -27,
+              -20
+            ],
+            "end": [
+              -30,
+              -17
+            ],
+            "start_angle": 270,
+            "sweep_angle": -90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f2",
+            "se_name": "Arc2d 391",
+            "type": "arc",
+            "center": [
+              47,
+              -17
+            ],
+            "radius": 3,
+            "start": [
+              47,
+              -20
+            ],
+            "end": [
+              50,
+              -17
+            ],
+            "start_angle": 270,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f3",
+            "se_name": "Arc2d 392",
+            "type": "arc",
+            "center": [
+              47,
+              7
+            ],
+            "radius": 3,
+            "start": [
+              50,
+              7
+            ],
+            "end": [
+              47,
+              10
+            ],
+            "start_angle": 0,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "R.f4",
+            "se_name": "Arc2d 393",
+            "type": "arc",
+            "center": [
+              -27,
+              7
+            ],
+            "radius": 3,
+            "start": [
+              -27,
+              10
+            ],
+            "end": [
+              -30,
+              7
+            ],
+            "start_angle": 90,
+            "sweep_angle": 90,
+            "length": 4.712389,
+            "group": "R"
+          },
+          {
+            "id": "S.a",
+            "se_name": "Line2d 394",
+            "type": "line",
+            "start": [
+              9,
+              -4
+            ],
+            "end": [
+              21,
+              -4
+            ],
+            "length": 12,
+            "group": "S"
+          },
+          {
+            "id": "S.e",
+            "se_name": "Arc2d 395",
+            "type": "arc",
+            "center": [
+              21,
+              0
+            ],
+            "radius": 4,
+            "start": [
+              21,
+              -4
+            ],
+            "end": [
+              21,
+              4
+            ],
+            "start_angle": 270,
+            "sweep_angle": 180,
+            "length": 12.566371,
+            "group": "S"
+          },
+          {
+            "id": "S.b",
+            "se_name": "Line2d 396",
+            "type": "line",
+            "start": [
+              21,
+              4
+            ],
+            "end": [
+              9,
+              4
+            ],
+            "length": 12,
+            "group": "S"
+          },
+          {
+            "id": "S.s",
+            "se_name": "Arc2d 397",
+            "type": "arc",
+            "center": [
+              9,
+              0
+            ],
+            "radius": 4,
+            "start": [
+              9,
+              4
+            ],
+            "end": [
+              9,
+              -4
+            ],
+            "start_angle": 90,
+            "sweep_angle": 180,
+            "length": 12.566371,
+            "group": "S"
+          },
+          {
+            "id": "H1_r",
+            "se_name": "Circle2d 398",
+            "type": "circle",
+            "center": [
+              40,
+              0
+            ],
+            "radius": 3
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "R.b",
+              "R.f2",
+              "R.r",
+              "R.f3",
+              "R.t",
+              "R.f4",
+              "R.l",
+              "R.f1"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 2392.274334,
+            "centroid_mm": [
+              10,
+              -5
+            ]
+          },
+          {
+            "entities": [
+              "H1"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              -20,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "S.a",
+              "S.e",
+              "S.b",
+              "S.s"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 146.265482,
+            "centroid_mm": [
+              15,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "H1_r"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 28.274334,
+            "centroid_mm": [
+              40,
+              0
+            ]
+          }
+        ],
+        "net_area_mm2": 2189.460184,
+        "bbox_mm": {
+          "min": [
+            -30,
+            -20
+          ],
+          "max": [
+            50,
+            10
+          ],
+          "size": [
+            80,
+            30
+          ]
+        },
+        "relations": [
+          {
+            "type": "horizontal",
+            "entity": "R.b",
+            "satisfied": true
+          },
+          {
+            "type": "horizontal",
+            "entity": "R.t",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.r",
+            "satisfied": true
+          },
+          {
+            "type": "vertical",
+            "entity": "R.l",
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.b",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.r",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.t",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "R.l",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "R.f1",
+              "R.f4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "point_on",
+            "point": [
+              "H1",
+              "center"
+            ],
+            "target": "@x_axis",
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "S.a",
+              "S.e"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "S.e",
+              "S.b"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "S.b",
+              "S.s"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "S.s",
+              "S.a"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "S.s",
+              "S.e"
+            ],
+            "satisfied": true
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "distance",
+            "name": "W",
+            "from": "R.l",
+            "to": "R.r",
+            "axis": "aligned",
+            "value": 80,
+            "unit": "mm",
+            "variable": "W"
+          },
+          {
+            "type": "distance",
+            "name": "H",
+            "from": "R.b",
+            "to": "R.t",
+            "axis": "aligned",
+            "value": 30,
+            "unit": "mm",
+            "variable": "H"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": "R.l",
+            "axis": "aligned",
+            "value": 30,
+            "unit": "mm",
+            "variable": "V434"
+          },
+          {
+            "type": "distance",
+            "from": "@x_axis",
+            "to": "R.b",
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V435"
+          },
+          {
+            "type": "radius",
+            "name": "Rf",
+            "entity": "R.f1",
+            "value": 3,
+            "unit": "mm",
+            "variable": "Rf"
+          },
+          {
+            "type": "diameter",
+            "name": "D",
+            "entity": "H1",
+            "value": 6,
+            "unit": "mm",
+            "variable": "D"
+          },
+          {
+            "type": "distance",
+            "from": "@y_axis",
+            "to": [
+              "H1",
+              "center"
+            ],
+            "axis": "aligned",
+            "value": 20,
+            "unit": "mm",
+            "variable": "V438"
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-36.4 -16.4 92.8 42.8' width='640' height='295' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.256'><line x1='0' y1='0' x2='9.6' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-9.6' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M -27 20 L 47 20 A 3 3 0 0 0 50 17 L 50 -7 A 3 3 0 0 0 47 -10 L -27 -10 A 3 3 0 0 0 -30 -7 L -30 17 A 3 3 0 0 0 -27 20 Z M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0 Z M 9 4 L 21 4 A 4 4 0 0 0 21 -4 L 9 -4 A 4 4 0 0 0 9 4 Z M 43 0 A 3 3 0 0 0 37 0 A 3 3 0 0 0 43 0 Z'/><g id='references' fill='none' stroke='#8a8a8a' stroke-width='0.192' stroke-dasharray='2.56 0.96 0.32 0.96'><path id='@y_axis' d='M 0 54 L 0 -54'/><path id='@x_axis' d='M -57 0 L 57 0'/></g><g id='elements' fill='none' stroke-width='0.32' stroke-linecap='round'><path id='R.b' data-se='Line2d 385' stroke='#1f4e79' d='M -27 20 L 47 20'/><path id='R.r' data-se='Line2d 386' stroke='#1f4e79' d='M 50 17 L 50 -7'/><path id='R.t' data-se='Line2d 387' stroke='#1f4e79' d='M 47 -10 L -27 -10'/><path id='R.l' data-se='Line2d 388' stroke='#1f4e79' d='M -30 -7 L -30 17'/><path id='H1' data-se='Circle2d 389' stroke='#1f4e79' d='M -17 0 A 3 3 0 0 0 -23 0 A 3 3 0 0 0 -17 0'/><path id='R.f1' data-se='Arc2d 390' stroke='#1f4e79' d='M -27 20 A 3 3 0 0 1 -30 17'/><path id='R.f2' data-se='Arc2d 391' stroke='#1f4e79' d='M 47 20 A 3 3 0 0 0 50 17'/><path id='R.f3' data-se='Arc2d 392' stroke='#1f4e79' d='M 50 -7 A 3 3 0 0 0 47 -10'/><path id='R.f4' data-se='Arc2d 393' stroke='#1f4e79' d='M -27 -10 A 3 3 0 0 0 -30 -7'/><path id='S.a' data-se='Line2d 394' stroke='#1f4e79' d='M 9 4 L 21 4'/><path id='S.e' data-se='Arc2d 395' stroke='#1f4e79' d='M 21 4 A 4 4 0 0 0 21 -4'/><path id='S.b' data-se='Line2d 396' stroke='#1f4e79' d='M 21 -4 L 9 -4'/><path id='S.s' data-se='Arc2d 397' stroke='#1f4e79' d='M 9 -4 A 4 4 0 0 0 9 4'/><path id='H1_r' data-se='Circle2d 398' stroke='#1f4e79' d='M 43 0 A 3 3 0 0 0 37 0 A 3 3 0 0 0 43 0'/></g><g id='labels' font-size='2.857143' fill='#333' text-anchor='middle'><text x='10' y='18.857143'>R.b</text><text x='50' y='3.857143'>R.r</text><text x='10' y='-11.142857'>R.t</text><text x='-30' y='3.857143'>R.l</text><text x='-17.87868' y='-3.264177'>H1</text><text x='-29.12132' y='17.978463'>R.f1</text><text x='49.12132' y='17.978463'>R.f2</text><text x='49.12132' y='-10.264177'>R.f3</text><text x='-29.12132' y='-10.264177'>R.f4</text><text x='15' y='2.857143'>S.a</text><text x='25' y='-1.142857'>S.e</text><text x='15' y='-5.142857'>S.b</text><text x='5' y='-1.142857'>S.s</text><text x='42.12132' y='-3.264177'>H1_r</text></g><g id='dimensions' font-size='2.571429' fill='#7a4f01' text-anchor='middle'><text x='10' y='8.142857'>W=80</text><text x='10' y='14.428571'>H=30</text><text x='-15' y='5.642857'>30</text><text x='5' y='13.142857'>20</text><text x='-29.12132' y='22.264177'>Rf=R3</text><text x='-17.87868' y='1.021537'>D=⌀6</text><text x='-10' y='3.142857'>20</text></g></svg>",
+        "applied": [
+          {
+            "op": "delete",
+            "entities": [
+              "H2"
+            ]
+          },
+          {
+            "op": "add",
+            "entities": [
+              "S.a",
+              "S.e",
+              "S.b",
+              "S.s"
+            ]
+          },
+          {
+            "op": "mirror",
+            "entities": [
+              "H1_r"
+            ]
+          }
+        ],
+        "dropped": [
+          {
+            "relation": {
+              "type": "equal",
+              "entities": [
+                "H1",
+                "H2"
+              ]
+            },
+            "reason": "an element it names was removed"
+          },
+          {
+            "relation": {
+              "type": "point_on",
+              "point": [
+                "H2",
+                "center"
+              ],
+              "target": "@x_axis"
+            },
+            "reason": "an element it names was removed"
+          },
+          {
+            "dimension": {
+              "type": "distance",
+              "name": "Pitch",
+              "from": [
+                "H1",
+                "center"
+              ],
+              "to": [
+                "H2",
+                "center"
+              ],
+              "axis": "x"
+            },
+            "reason": "an element it names was removed"
+          }
+        ],
+        "description": {
+          "entities": [
+            {
+              "id": "R.b",
+              "type": "line",
+              "start": [
+                -27,
+                -20
+              ],
+              "end": [
+                47,
+                -20
+              ],
+              "group": "R"
+            },
+            {
+              "id": "R.r",
+              "type": "line",
+              "start": [
+                50,
+                -17
+              ],
+              "end": [
+                50,
+                7
+              ],
+              "group": "R"
+            },
+            {
+              "id": "R.t",
+              "type": "line",
+              "start": [
+                47,
+                10
+              ],
+              "end": [
+                -27,
+                10
+              ],
+              "group": "R"
+            },
+            {
+              "id": "R.l",
+              "type": "line",
+              "start": [
+                -30,
+                7
+              ],
+              "end": [
+                -30,
+                -17
+              ],
+              "group": "R"
+            },
+            {
+              "id": "H1",
+              "type": "circle",
+              "center": [
+                -20,
+                0
+              ],
+              "radius": 3
+            },
+            {
+              "id": "R.f1",
+              "type": "arc",
+              "center": [
+                -27,
+                -17
+              ],
+              "start": [
+                -27,
+                -20
+              ],
+              "end": [
+                -30,
+                -17
+              ],
+              "clockwise": true,
+              "group": "R"
+            },
+            {
+              "id": "R.f2",
+              "type": "arc",
+              "center": [
+                47,
+                -17
+              ],
+              "start": [
+                47,
+                -20
+              ],
+              "end": [
+                50,
+                -17
+              ],
+              "group": "R"
+            },
+            {
+              "id": "R.f3",
+              "type": "arc",
+              "center": [
+                47,
+                7
+              ],
+              "start": [
+                50,
+                7
+              ],
+              "end": [
+                47,
+                10
+              ],
+              "group": "R"
+            },
+            {
+              "id": "R.f4",
+              "type": "arc",
+              "center": [
+                -27,
+                7
+              ],
+              "start": [
+                -27,
+                10
+              ],
+              "end": [
+                -30,
+                7
+              ],
+              "group": "R"
+            },
+            {
+              "id": "S.a",
+              "type": "line",
+              "start": [
+                9,
+                -4
+              ],
+              "end": [
+                21,
+                -4
+              ],
+              "group": "S"
+            },
+            {
+              "id": "S.e",
+              "type": "arc",
+              "center": [
+                21,
+                0
+              ],
+              "start": [
+                21,
+                -4
+              ],
+              "end": [
+                21,
+                4
+              ],
+              "group": "S"
+            },
+            {
+              "id": "S.b",
+              "type": "line",
+              "start": [
+                21,
+                4
+              ],
+              "end": [
+                9,
+                4
+              ],
+              "group": "S"
+            },
+            {
+              "id": "S.s",
+              "type": "arc",
+              "center": [
+                9,
+                0
+              ],
+              "start": [
+                9,
+                4
+              ],
+              "end": [
+                9,
+                -4
+              ],
+              "group": "S"
+            },
+            {
+              "id": "H1_r",
+              "type": "circle",
+              "center": [
+                40,
+                0
+              ],
+              "radius": 3
+            }
+          ],
+          "relations": [
+            {
+              "type": "horizontal",
+              "entity": "R.b"
+            },
+            {
+              "type": "horizontal",
+              "entity": "R.t"
+            },
+            {
+              "type": "vertical",
+              "entity": "R.r"
+            },
+            {
+              "type": "vertical",
+              "entity": "R.l"
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.b",
+                "R.f1"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.l",
+                "R.f1"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.b",
+                "R.f2"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.r",
+                "R.f2"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.r",
+                "R.f3"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.t",
+                "R.f3"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.t",
+                "R.f4"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "R.l",
+                "R.f4"
+              ]
+            },
+            {
+              "type": "equal",
+              "entities": [
+                "R.f1",
+                "R.f2"
+              ]
+            },
+            {
+              "type": "equal",
+              "entities": [
+                "R.f1",
+                "R.f3"
+              ]
+            },
+            {
+              "type": "equal",
+              "entities": [
+                "R.f1",
+                "R.f4"
+              ]
+            },
+            {
+              "type": "point_on",
+              "point": [
+                "H1",
+                "center"
+              ],
+              "target": "@x_axis"
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "S.a",
+                "S.e"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "S.e",
+                "S.b"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "S.b",
+                "S.s"
+              ]
+            },
+            {
+              "type": "tangent",
+              "entities": [
+                "S.s",
+                "S.a"
+              ]
+            },
+            {
+              "type": "equal",
+              "entities": [
+                "S.s",
+                "S.e"
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "type": "distance",
+              "name": "W",
+              "from": "R.l",
+              "to": "R.r",
+              "axis": "aligned"
+            },
+            {
+              "type": "distance",
+              "name": "H",
+              "from": "R.b",
+              "to": "R.t",
+              "axis": "aligned"
+            },
+            {
+              "type": "distance",
+              "from": "@y_axis",
+              "to": "R.l",
+              "axis": "aligned"
+            },
+            {
+              "type": "distance",
+              "from": "@x_axis",
+              "to": "R.b",
+              "axis": "aligned"
+            },
+            {
+              "type": "radius",
+              "name": "Rf",
+              "entity": "R.f1"
+            },
+            {
+              "type": "diameter",
+              "name": "D",
+              "entity": "H1"
+            },
+            {
+              "type": "distance",
+              "from": "@y_axis",
+              "to": [
+                "H1",
+                "center"
+              ],
+              "axis": "aligned"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "command": "extrude",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "268a727f95384108b3c4db40b9770520",
+        "distance_mm": 10
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "operation": "add",
+        "expected_volume_mm3": 21894.601836602556,
+        "geometry": {
+          "models": [
+            {
+              "model_index": 1,
+              "name": "Design Model",
+              "volume_mm3": 21894.601836602553,
+              "face_count": 16,
+              "min_mm": [
+                -30,
+                -20.000000000000004,
+                0
+              ],
+              "max_mm": [
+                50,
+                10,
+                10
+              ],
+              "size_mm": [
+                80,
+                30.000000000000004,
+                10
+              ]
+            }
+          ],
+          "total_volume_mm3": 21894.601836602553
+        }
+      }
+    },
+    {
+      "command": "faces",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec"
+      },
+      "result": {
+        "faces": [
+          {
+            "face": 1,
+            "kind": "cylinder",
+            "area_mm2": 47.12389
+          },
+          {
+            "face": 2,
+            "kind": "plane",
+            "area_mm2": 740,
+            "origin_mm": [
+              -27,
+              -20,
+              10
+            ],
+            "normal": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "face": 3,
+            "kind": "cylinder",
+            "area_mm2": 47.12389
+          },
+          {
+            "face": 4,
+            "kind": "plane",
+            "area_mm2": 240,
+            "origin_mm": [
+              50,
+              -17,
+              10
+            ],
+            "normal": [
+              -1,
+              0,
+              0
+            ]
+          },
+          {
+            "face": 5,
+            "kind": "cylinder",
+            "area_mm2": 47.12389
+          },
+          {
+            "face": 6,
+            "kind": "plane",
+            "area_mm2": 740,
+            "origin_mm": [
+              47,
+              10,
+              10
+            ],
+            "normal": [
+              0,
+              -1,
+              0
+            ]
+          },
+          {
+            "face": 7,
+            "kind": "cylinder",
+            "area_mm2": 47.12389
+          },
+          {
+            "face": 8,
+            "kind": "cylinder",
+            "area_mm2": 125.663706
+          },
+          {
+            "face": 9,
+            "kind": "plane",
+            "area_mm2": 120,
+            "origin_mm": [
+              21,
+              4,
+              10
+            ],
+            "normal": [
+              0,
+              -1,
+              0
+            ]
+          },
+          {
+            "face": 10,
+            "kind": "cylinder",
+            "area_mm2": 125.663706
+          },
+          {
+            "face": 11,
+            "kind": "cylinder",
+            "area_mm2": 188.495559
+          },
+          {
+            "face": 12,
+            "kind": "plane",
+            "area_mm2": 120,
+            "origin_mm": [
+              9,
+              -4,
+              10
+            ],
+            "normal": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "face": 13,
+            "kind": "cylinder",
+            "area_mm2": 188.495559
+          },
+          {
+            "face": 14,
+            "kind": "plane",
+            "area_mm2": 240,
+            "origin_mm": [
+              -30,
+              7,
+              10
+            ],
+            "normal": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "face": 15,
+            "kind": "plane",
+            "area_mm2": 2189.460184,
+            "origin_mm": [
+              -27,
+              -17,
+              10
+            ],
+            "normal": [
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "face": 16,
+            "kind": "plane",
+            "area_mm2": 2189.460184,
+            "origin_mm": [
+              -27,
+              -17,
+              0
+            ],
+            "normal": [
+              0,
+              0,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "command": "create_plane",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "face": 15,
+        "offset_mm": 0
+      },
+      "result": {
+        "plane_index": 4,
+        "plane": {
+          "index": 4,
+          "name": "",
+          "origin_mm": [
+            10,
+            -5,
+            10
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "command": "sketch",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "plane_index": 4,
+        "entities": [
+          {
+            "id": "B",
+            "type": "circle",
+            "center": [
+              -25,
+              5
+            ],
+            "radius": 4
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "diameter",
+            "entity": "B",
+            "name": "Boss"
+          }
+        ]
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "d84025babd514ba6b1ee3a6c349ffbed",
+        "sketch_index": 2,
+        "plane_index": 4,
+        "validation_code": 0,
+        "max_deviation_mm": 0,
+        "fully_constrained": false,
+        "plane_frame": {
+          "origin_mm": [
+            10,
+            -5,
+            10
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "entities": [
+          {
+            "id": "B",
+            "se_name": "Circle2d 466",
+            "type": "circle",
+            "center": [
+              -25,
+              5
+            ],
+            "radius": 4
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "B"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 50.265482,
+            "centroid_mm": [
+              -25,
+              5
+            ]
+          }
+        ],
+        "net_area_mm2": 50.265482,
+        "bbox_mm": {
+          "min": [
+            -29,
+            1
+          ],
+          "max": [
+            -21,
+            9
+          ],
+          "size": [
+            8,
+            8
+          ]
+        },
+        "dimensions": [
+          {
+            "type": "diameter",
+            "name": "Boss",
+            "entity": "B",
+            "value": 8,
+            "unit": "mm",
+            "variable": "Boss"
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-31.32 -11.32 33.64 13.64' width='640' height='260' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.0928'><line x1='0' y1='0' x2='3.48' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-3.48' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M -21 -5 A 4 4 0 0 0 -29 -5 A 4 4 0 0 0 -21 -5 Z'/><g id='elements' fill='none' stroke-width='0.116' stroke-linecap='round'><path id='B' data-se='Circle2d 466' stroke='#1f4e79' d='M -21 -5 A 4 4 0 0 0 -29 -5 A 4 4 0 0 0 -21 -5'/></g><g id='labels' font-size='1.035714' fill='#333' text-anchor='middle'><text x='-22.171573' y='-8.242713'>B</text></g><g id='dimensions' font-size='0.932143' fill='#7a4f01' text-anchor='middle'><text x='-22.171573' y='-6.689141'>Boss=⌀8</text></g></svg>"
+      }
+    },
+    {
+      "command": "extrude",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "profile_id": "d84025babd514ba6b1ee3a6c349ffbed",
+        "distance_mm": 5
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "operation": "add",
+        "expected_volume_mm3": 251.3274122871835,
+        "geometry": {
+          "models": [
+            {
+              "model_index": 1,
+              "name": "Design Model",
+              "volume_mm3": 22145.929248889737,
+              "face_count": 19,
+              "min_mm": [
+                -30,
+                -20.000000000000004,
+                0
+              ],
+              "max_mm": [
+                50,
+                10,
+                15
+              ],
+              "size_mm": [
+                80,
+                30.000000000000004,
+                15
+              ]
+            }
+          ],
+          "total_volume_mm3": 22145.929248889737
+        }
+      }
+    },
+    {
+      "command": "new_part",
+      "arguments": {},
+      "result": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "name": "零件39",
+        "full_name": "零件39",
+        "type": 1,
+        "dirty": false
+      }
+    },
+    {
+      "command": "sketch",
+      "arguments": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "plane_index": 3,
+        "entities": [
+          {
+            "id": "P",
+            "type": "polyline",
+            "points": [
+              [
+                10,
+                0
+              ],
+              [
+                30,
+                0
+              ],
+              [
+                30,
+                5
+              ],
+              [
+                15,
+                5
+              ],
+              [
+                15,
+                30
+              ],
+              [
+                10,
+                30
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "id": "AX",
+            "type": "line",
+            "start": [
+              0,
+              -5
+            ],
+            "end": [
+              0,
+              40
+            ]
+          }
+        ],
+        "corners": [
+          {
+            "at": [
+              15,
+              5
+            ],
+            "fillet": 3
+          }
+        ],
+        "axis": "AX"
+      },
+      "result": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "profile_id": "037a83a8fffb4448b347dbc1e803658b",
+        "sketch_index": 1,
+        "plane_index": 3,
+        "validation_code": 0,
+        "max_deviation_mm": 0,
+        "fully_constrained": false,
+        "plane_frame": {
+          "origin_mm": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            0,
+            1
+          ],
+          "normal": [
+            0,
+            -1,
+            0
+          ]
+        },
+        "entities": [
+          {
+            "id": "P.1",
+            "se_name": "Line2d 318",
+            "type": "line",
+            "start": [
+              10,
+              0
+            ],
+            "end": [
+              30,
+              0
+            ],
+            "length": 20,
+            "group": "P"
+          },
+          {
+            "id": "P.2",
+            "se_name": "Line2d 328",
+            "type": "line",
+            "start": [
+              30,
+              0
+            ],
+            "end": [
+              30,
+              5
+            ],
+            "length": 5,
+            "group": "P"
+          },
+          {
+            "id": "P.3",
+            "se_name": "Line2d 329",
+            "type": "line",
+            "start": [
+              30,
+              5
+            ],
+            "end": [
+              18,
+              5
+            ],
+            "length": 12,
+            "group": "P"
+          },
+          {
+            "id": "P.4",
+            "se_name": "Line2d 330",
+            "type": "line",
+            "start": [
+              15,
+              8
+            ],
+            "end": [
+              15,
+              30
+            ],
+            "length": 22,
+            "group": "P"
+          },
+          {
+            "id": "P.5",
+            "se_name": "Line2d 331",
+            "type": "line",
+            "start": [
+              15,
+              30
+            ],
+            "end": [
+              10,
+              30
+            ],
+            "length": 5,
+            "group": "P"
+          },
+          {
+            "id": "P.6",
+            "se_name": "Line2d 332",
+            "type": "line",
+            "start": [
+              10,
+              30
+            ],
+            "end": [
+              10,
+              0
+            ],
+            "length": 30,
+            "group": "P"
+          },
+          {
+            "id": "AX",
+            "se_name": "Line2d 333",
+            "type": "line",
+            "start": [
+              0,
+              -5
+            ],
+            "end": [
+              0,
+              40
+            ],
+            "length": 45,
+            "construction": true
+          },
+          {
+            "id": "corner1",
+            "se_name": "Arc2d 334",
+            "type": "arc",
+            "center": [
+              18,
+              8
+            ],
+            "radius": 3,
+            "start": [
+              18,
+              5
+            ],
+            "end": [
+              15,
+              8
+            ],
+            "start_angle": 270,
+            "sweep_angle": -90,
+            "length": 4.712389,
+            "group": "P"
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "P.1",
+              "P.2",
+              "P.3",
+              "corner1",
+              "P.4",
+              "P.5",
+              "P.6"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 226.931417,
+            "centroid_mm": [
+              15.831944,
+              10.789389
+            ]
+          }
+        ],
+        "net_area_mm2": 226.931417,
+        "bbox_mm": {
+          "min": [
+            0,
+            -5
+          ],
+          "max": [
+            30,
+            40
+          ],
+          "size": [
+            30,
+            45
+          ]
+        },
+        "axis": "AX",
+        "relations": [
+          {
+            "type": "tangent",
+            "entities": [
+              "P.3",
+              "corner1"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "tangent",
+            "entities": [
+              "P.4",
+              "corner1"
+            ],
+            "satisfied": true
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-3.6 -43.6 37.2 52.2' width='640' height='898' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.144'><line x1='0' y1='0' x2='5.4' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-5.4' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M 10 0 L 30 0 L 30 -5 L 18 -5 A 3 3 0 0 1 15 -8 L 15 -30 L 10 -30 L 10 0 Z'/><g id='elements' fill='none' stroke-width='0.18' stroke-linecap='round'><path id='P.1' data-se='Line2d 318' stroke='#1f4e79' d='M 10 0 L 30 0'/><path id='P.2' data-se='Line2d 328' stroke='#1f4e79' d='M 30 0 L 30 -5'/><path id='P.3' data-se='Line2d 329' stroke='#1f4e79' d='M 30 -5 L 18 -5'/><path id='P.4' data-se='Line2d 330' stroke='#1f4e79' d='M 15 -8 L 15 -30'/><path id='P.5' data-se='Line2d 331' stroke='#1f4e79' d='M 15 -30 L 10 -30'/><path id='P.6' data-se='Line2d 332' stroke='#1f4e79' d='M 10 -30 L 10 0'/><path id='AX' data-se='Line2d 333' stroke='#8a8a8a' stroke-dasharray='0.72 0.54' d='M 0 5 L 0 -40'/><path id='corner1' data-se='Arc2d 334' stroke='#1f4e79' d='M 18 -5 A 3 3 0 0 1 15 -8'/></g><g id='labels' font-size='1.607143' fill='#333' text-anchor='middle'><text x='20' y='-0.642857'>P.1</text><text x='30' y='-3.142857'>P.2</text><text x='24' y='-5.642857'>P.3</text><text x='15' y='-19.642857'>P.4</text><text x='12.5' y='-30.642857'>P.5</text><text x='10' y='-15.642857'>P.6</text><text x='0' y='-18.142857'>AX</text><text x='15.87868' y='-6.521537'>corner1</text></g></svg>"
+      }
+    },
+    {
+      "command": "revolve",
+      "arguments": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "profile_id": "037a83a8fffb4448b347dbc1e803658b"
+      },
+      "result": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "operation": "add",
+        "angle_deg": 360,
+        "expected_volume_mm3": 22574.011386,
+        "geometry": {
+          "models": [
+            {
+              "model_index": 1,
+              "name": "Design Model",
+              "volume_mm3": 22574.01138621982,
+              "face_count": 7,
+              "min_mm": [
+                -30,
+                -30,
+                0
+              ],
+              "max_mm": [
+                30,
+                30,
+                29.999999999999996
+              ],
+              "size_mm": [
+                60,
+                60,
+                29.999999999999996
+              ]
+            }
+          ],
+          "total_volume_mm3": 22574.01138621982
+        }
+      }
+    },
+    {
+      "command": "sketch",
+      "arguments": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "plane_index": 1,
+        "entities": [
+          {
+            "id": "HX",
+            "type": "polygon",
+            "center": [
+              0,
+              0
+            ],
+            "radius": 20,
+            "sides": 6
+          },
+          {
+            "id": "E",
+            "type": "ellipse",
+            "center": [
+              0,
+              0
+            ],
+            "major_radius": 8,
+            "minor_radius": 4,
+            "angle": 30
+          },
+          {
+            "id": "K",
+            "type": "spline",
+            "points": [
+              [
+                35,
+                0
+              ],
+              [
+                45,
+                8
+              ],
+              [
+                55,
+                0
+              ],
+              [
+                45,
+                -8
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "id": "CL",
+            "type": "line",
+            "start": [
+              -25,
+              0
+            ],
+            "end": [
+              60,
+              0
+            ],
+            "construction": true
+          }
+        ],
+        "relations": [
+          {
+            "type": "symmetric",
+            "axis": "CL",
+            "entities": [
+              "HX.1",
+              "HX.3"
+            ]
+          },
+          {
+            "type": "coincident",
+            "points": [
+              [
+                "E",
+                "center"
+              ],
+              "@origin"
+            ]
+          },
+          {
+            "type": "collinear",
+            "entities": [
+              "CL",
+              "@x_axis"
+            ]
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "angle",
+            "entities": [
+              "HX.1",
+              "HX.2"
+            ],
+            "value": 60
+          }
+        ]
+      },
+      "result": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "profile_id": "c4b59eb91921485484c46888b45b56f4",
+        "sketch_index": 2,
+        "plane_index": 1,
+        "validation_code": 0,
+        "max_deviation_mm": 0,
+        "fully_constrained": false,
+        "plane_frame": {
+          "origin_mm": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "entities": [
+          {
+            "id": "HX.1",
+            "se_name": "Line2d 361",
+            "type": "line",
+            "start": [
+              0,
+              20
+            ],
+            "end": [
+              -17.320508,
+              10
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "HX.2",
+            "se_name": "Line2d 362",
+            "type": "line",
+            "start": [
+              -17.320508,
+              10
+            ],
+            "end": [
+              -17.320508,
+              -10
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "HX.3",
+            "se_name": "Line2d 363",
+            "type": "line",
+            "start": [
+              -17.320508,
+              -10
+            ],
+            "end": [
+              0,
+              -20
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "HX.4",
+            "se_name": "Line2d 364",
+            "type": "line",
+            "start": [
+              0,
+              -20
+            ],
+            "end": [
+              17.320508,
+              -10
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "HX.5",
+            "se_name": "Line2d 365",
+            "type": "line",
+            "start": [
+              17.320508,
+              -10
+            ],
+            "end": [
+              17.320508,
+              10
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "HX.6",
+            "se_name": "Line2d 366",
+            "type": "line",
+            "start": [
+              17.320508,
+              10
+            ],
+            "end": [
+              0,
+              20
+            ],
+            "length": 20,
+            "group": "HX"
+          },
+          {
+            "id": "E",
+            "se_name": "Ellipse2d 367",
+            "type": "ellipse",
+            "center": [
+              0,
+              0
+            ],
+            "major_radius": 8,
+            "minor_radius": 4,
+            "angle": 30
+          },
+          {
+            "id": "K",
+            "se_name": "BSplineCurve2d 368",
+            "type": "spline",
+            "points": [
+              [
+                35,
+                0
+              ],
+              [
+                45,
+                8
+              ],
+              [
+                55,
+                0
+              ],
+              [
+                45,
+                -8
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "id": "CL",
+            "se_name": "Line2d 369",
+            "type": "line",
+            "start": [
+              -25,
+              0
+            ],
+            "end": [
+              60,
+              0
+            ],
+            "length": 85,
+            "construction": true
+          }
+        ],
+        "loops": [
+          {
+            "entities": [
+              "HX.1",
+              "HX.2",
+              "HX.3",
+              "HX.4",
+              "HX.5",
+              "HX.6"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "ccw",
+            "area_mm2": 1039.230485,
+            "centroid_mm": [
+              0,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "K"
+            ],
+            "closed": true,
+            "role": "outer",
+            "orientation": "cw",
+            "area_mm2": 218.354492,
+            "centroid_mm": [
+              45,
+              0
+            ]
+          },
+          {
+            "entities": [
+              "E"
+            ],
+            "closed": true,
+            "role": "hole",
+            "orientation": "ccw",
+            "area_mm2": 100.530965,
+            "centroid_mm": [
+              0,
+              0
+            ]
+          }
+        ],
+        "net_area_mm2": 1157.054012,
+        "bbox_mm": {
+          "min": [
+            -25,
+            -20
+          ],
+          "max": [
+            60,
+            20
+          ],
+          "size": [
+            85,
+            40
+          ]
+        },
+        "approximate": "Splines are measured along a stand-in curve through their points; areas are close, not exact.",
+        "relations": [
+          {
+            "type": "equal",
+            "entities": [
+              "HX.1",
+              "HX.2"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "HX.1",
+              "HX.3"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "HX.1",
+              "HX.4"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "HX.1",
+              "HX.5"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "equal",
+            "entities": [
+              "HX.1",
+              "HX.6"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "symmetric",
+            "entities": [
+              "HX.1",
+              "HX.3"
+            ],
+            "axis": "CL",
+            "satisfied": true
+          },
+          {
+            "type": "coincident",
+            "points": [
+              [
+                "E",
+                "center"
+              ],
+              "@origin"
+            ],
+            "satisfied": true
+          },
+          {
+            "type": "collinear",
+            "entities": [
+              "CL",
+              "@x_axis"
+            ],
+            "satisfied": true
+          }
+        ],
+        "dimensions": [
+          {
+            "type": "angle",
+            "entities": [
+              "HX.1",
+              "HX.2"
+            ],
+            "value": 60,
+            "unit": "deg",
+            "variable": "V385"
+          }
+        ],
+        "issues": [],
+        "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-31.8 -26.8 98.6 53.6' width='640' height='348' font-family='sans-serif'><desc>Plane-local sketch, millimeters; +x right, +y up.</desc><g id='origin' stroke-width='0.272'><line x1='0' y1='0' x2='10.2' y2='0' stroke='#d0021b'/><line x1='0' y1='0' x2='0' y2='-10.2' stroke='#2e8b57'/></g><path id='region' fill='#dce9f5' fill-rule='evenodd' stroke='none' d='M 0 -20 L -17.320508 -10 L -17.320508 10 L 0 20 L 17.320508 10 L 17.320508 -10 L 0 -20 Z M 35 0 C 35 -2.666667 41.666667 -8 45 -8 C 48.333333 -8 55 -2.666667 55 0 C 55 2.666667 48.333333 8 45 8 C 41.666667 8 35 2.666667 35 0 Z M 6.928203 -4 A 8 4 -30 0 0 -6.928203 4 A 8 4 -30 0 0 6.928203 -4 Z'/><g id='references' fill='none' stroke='#8a8a8a' stroke-width='0.204' stroke-dasharray='2.72 1.02 0.34 1.02'><path id='@y_axis' d='M 0 54 L 0 -54'/><path id='@x_axis' d='M -57 0 L 57 0'/></g><g id='elements' fill='none' stroke-width='0.34' stroke-linecap='round'><path id='HX.1' data-se='Line2d 361' stroke='#1f4e79' d='M 0 -20 L -17.320508 -10'/><path id='HX.2' data-se='Line2d 362' stroke='#1f4e79' d='M -17.320508 -10 L -17.320508 10'/><path id='HX.3' data-se='Line2d 363' stroke='#1f4e79' d='M -17.320508 10 L 0 20'/><path id='HX.4' data-se='Line2d 364' stroke='#1f4e79' d='M 0 20 L 17.320508 10'/><path id='HX.5' data-se='Line2d 365' stroke='#1f4e79' d='M 17.320508 10 L 17.320508 -10'/><path id='HX.6' data-se='Line2d 366' stroke='#1f4e79' d='M 17.320508 -10 L 0 -20'/><path id='E' data-se='Ellipse2d 367' stroke='#1f4e79' d='M 6.928203 -4 A 8 4 -30 0 0 -6.928203 4 A 8 4 -30 0 0 6.928203 -4'/><path id='K' data-se='BSplineCurve2d 368' stroke='#1f4e79' d='M 35 0 C 35 -2.666667 41.666667 -8 45 -8 C 48.333333 -8 55 -2.666667 55 0 C 55 2.666667 48.333333 8 45 8 C 41.666667 8 35 2.666667 35 0'/><path id='CL' data-se='Line2d 369' stroke='#8a8a8a' stroke-dasharray='1.36 1.02' d='M -25 0 L 60 0'/></g><g id='labels' font-size='3.035714' fill='#333' text-anchor='middle'><text x='-8.660254' y='-16.214286'>HX.1</text><text x='-17.320508' y='-1.214286'>HX.2</text><text x='-8.660254' y='13.785714'>HX.3</text><text x='8.660254' y='13.785714'>HX.4</text><text x='17.320508' y='-1.214286'>HX.5</text><text x='8.660254' y='-16.214286'>HX.6</text><text x='3.484766' y='-6.492203'>E</text><text x='55' y='-1.214286'>K</text><text x='17.5' y='-1.214286'>CL</text></g><g id='dimensions' font-size='2.732143' fill='#7a4f01' text-anchor='middle'><text x='-8.660254' y='-11.660714'>60°</text></g></svg>"
+      }
+    },
+    {
+      "command": "close_document",
+      "arguments": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "discard_changes": true
+      },
+      "result": {
+        "document_id": "223b8ec04aa34e158fc3fdc2a528c2ec",
+        "closed": true
+      }
+    },
+    {
+      "command": "close_document",
+      "arguments": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
+        "discard_changes": true
+      },
+      "result": {
+        "document_id": "591e6873eece45f9992a4cc0ddfb5f52",
         "closed": true
       }
     },
     {
       "command": "set_view",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Front"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Front"
       }
     },
     {
       "command": "set_view",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Top"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Top"
       }
     },
     {
       "command": "set_view",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Right"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Right"
       }
     },
     {
       "command": "set_view",
       "arguments": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Iso"
       },
       "result": {
-        "document_id": "3ee4c4281433443a97ac9db3d666cabb",
+        "document_id": "51f0c5cfdf1d43e9b4f3b58d285724f0",
         "orientation": "Iso"
       }
     }
   ],
   "tool_count": 4,
-  "command_count": 25,
+  "command_count": 30,
   "connection": {
     "connected": true,
-    "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-163339",
+    "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-173435",
     "version": "220.00.00.104",
-    "document_count": 1,
+    "document_count": 6,
     "started": false
   },
   "unique_commands_exercised": [
@@ -1301,9 +4779,12 @@
     "create_box",
     "create_circle",
     "create_cylinder",
+    "create_plane",
     "create_rectangle",
+    "edit_sketch",
     "export_step",
     "extrude",
+    "faces",
     "features",
     "geometry",
     "get_document",
@@ -1312,11 +4793,13 @@
     "new_part",
     "open_document",
     "reference_planes",
+    "revolve",
     "save_document",
     "set_extrusion_depth",
     "set_variable",
     "set_view",
     "sketch",
+    "sketch_dimensions",
     "status",
     "view_sketch"
   ]

@@ -4,7 +4,7 @@
 
 MCP 接口固定为 4 个外壳工具；具体操作是内部指令，编译在单独的指令程序集里，服务运行中可以热换、逐条开关，客户端不用重连。
 
-**4 个 MCP 工具 · 25 条内部指令 · 运行时热换 · stdio MCP · 毫米输入 · Windows · .NET 8 · MIT**
+**4 个 MCP 工具 · 30 条内部指令 · 运行时热换 · stdio MCP · 毫米输入 · Windows · .NET 8 · MIT**
 
 已在 **Solid Edge 2020 / 220.00.00.104、.NET 8.0.31 x64** 上通过真实 MCP 客户端完成建模、改厚度、切孔、截图、保存、重新打开和 STEP 导出。其他 Solid Edge 版本尚未验证。
 
@@ -69,36 +69,70 @@ Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超�
 | --- | --- |
 | 连接 | `status`、`connect`、`disconnect` |
 | 文档 | `list_documents`、`get_document`、`new_part`、`open_document`、`close_document` |
-| 草图 | `sketch`、`view_sketch`、`reference_planes`、`create_rectangle`、`create_circle` |
-| 实体 | `create_box`、`create_cylinder`、`extrude` |
+| 草图 | `sketch`、`view_sketch`、`sketch_dimensions`、`edit_sketch`、`reference_planes`、`create_plane`、`faces`、`create_rectangle`、`create_circle` |
+| 实体 | `create_box`、`create_cylinder`、`extrude`、`revolve` |
 | 查询和编辑 | `geometry`、`features`、`list_variables`、`set_variable`、`set_extrusion_depth` |
 | 文件 | `save_document`、`export_step` |
 | 视图 | `set_view`、`capture_viewport` |
 
 指令可以调用其他指令（如 `create_box` = `create_rectangle` + `extrude`）。关掉的指令在嵌套调用里同样不可用。
 
-### 草图：`sketch` 与 `view_sketch`
+### 草图
 
-`sketch` 的输入是声明式的元素列表（平面局部坐标，mm），完整格式由 `se_find command=sketch` 给出：
+| 指令 | 作用 |
+| --- | --- |
+| `sketch` | 按描述画一张草图并核对，返回读回的几何、关系、尺寸和 SVG |
+| `view_sketch` | 列出零件的草图；按序号或 `profile_id` 查看一张（`png=true` 另附图片） |
+| `sketch_dimensions` | 列出草图的尺寸和变量名；`set` 改驱动尺寸，改后整体复核，失败恢复原值 |
+| `edit_sketch` | 编辑未用过的草图：移动、旋转、缩放、镜像、偏移、删除、追加、打断、修剪、延伸、倒角/圆角 |
+| `reference_planes` / `create_plane` / `faces` | 基准面坐标系；按基准面或实体平面偏移建面；列出实体面和边 |
+| `revolve` | 绕草图里的轴线旋转，按帕普斯定理核对体积 |
+
+`sketch` 的输入是一份声明式描述（平面局部坐标，mm），完整格式由 `se_find command=sketch` 给出。下例是一块完全约束的板：圆角矩形、两个孔、相对基准定位、命名尺寸成为变量：
 
 ```json
-{"document_id": "…", "plane_index": 1, "entities": [
-  {"id": "L1", "type": "line",   "start": [0, 0],  "end": [80, 0]},
-  {"id": "A1", "type": "arc",    "center": [80, 10], "start": [80, 0], "end": [80, 20]},
-  {"id": "L2", "type": "line",   "start": [80, 20], "end": [0, 20]},
-  {"id": "L3", "type": "line",   "start": [0, 20],  "end": [0, 0]},
-  {"id": "H1", "type": "circle", "center": [40, 10], "radius": 4}
-]}
+{"document_id": "…", "plane_index": 1,
+ "entities": [
+   {"id": "R",  "type": "rectangle", "center": [0, 0], "size": [60, 40], "corner_radius": 5},
+   {"id": "H1", "type": "circle", "center": [-20, 0], "radius": 3},
+   {"id": "H2", "type": "circle", "center": [20, 0],  "radius": 3}],
+ "relations": [
+   {"type": "equal", "entities": ["R.f1", "R.f2"]}, {"type": "equal", "entities": ["R.f1", "R.f3"]},
+   {"type": "equal", "entities": ["R.f1", "R.f4"]}, {"type": "equal", "entities": ["H1", "H2"]},
+   {"type": "point_on", "point": ["H1", "center"], "target": "@x_axis"},
+   {"type": "point_on", "point": ["H2", "center"], "target": "@x_axis"}],
+ "dimensions": [
+   {"type": "distance", "from": "R.l", "to": "R.r", "name": "W"},
+   {"type": "distance", "from": "R.b", "to": "R.t", "name": "H"},
+   {"type": "distance", "from": "@y_axis", "to": "R.l"},
+   {"type": "distance", "from": "@x_axis", "to": "R.b"},
+   {"type": "radius", "entity": "R.f1", "name": "Rf"},
+   {"type": "diameter", "entity": "H1", "name": "D"},
+   {"type": "distance", "from": ["H1", "center"], "to": ["H2", "center"], "axis": "x", "name": "Pitch"},
+   {"type": "distance", "from": "@y_axis", "to": ["H1", "center"]}]}
 ```
 
-- 圆弧两种写法：`center+start+end`（默认逆时针，`clockwise=true` 反向）或 `center+radius+start_angle+end_angle`（度）。
-- 重合的端点自动加关键点重合约束；所有链必须闭合，内部闭环自动成为孔。
-- 先在本地检查描述：开口端点、分叉、交叉、重叠。有缺陷时什么都不画，错误里带上问题清单和描述的 SVG。
-- 画完从 Solid Edge 逐个读回，与描述比对（坐标偏差、净面积），不一致就删除草图并报错。
-- 返回：读回的元素（含 Solid Edge 名称）、各环的内外角色/方向/面积/形心、净面积（拉伸体积 = 净面积 × 深度）、包围盒、问题清单，以及按读回几何生成的 **SVG**（y 向上，单引号属性，可直接在 JSON 里阅读）。默认不出 PNG，单步调用保持轻量。
-- 返回的 `profile_id` 可直接交给 `extrude`。Solid Edge 会把孔拆成同一草图集里的独立轮廓，`extrude` 会把整组轮廓一起拉伸。
+描述的组成：
 
-`view_sketch` 查看已有草图：不带参数列出零件的全部草图（序号、元素数、闭环数、净面积、问题数）；`sketch_index` 或 `profile_id` 返回与 `sketch` 相同的结构和 SVG；`png=true` 时另附 PNG 图片。拉伸用掉的草图也能按序号查看。
+- **元素**：`line`、`arc`（`center+start+end`，或 `center+radius+start_angle+end_angle`）、`circle`、`ellipse`、`spline`（经过的点，可闭合）、`point`；简写 `rectangle`、`polygon`、`polyline`、`slot` 展开成线和弧，子元素 id 为 `<id>.<部位>`（矩形 `.b .r .t .l`，多边形和折线 `.1..n`，长圆 `.a .e .b .s`），并自带设计意图（矩形水平/竖直、多边形等边、长圆相切）。`construction=true` 的元素只参与关系，不成面。
+- **拐角**：`corner_radius` / `corner_chamfer` 处理简写的全部拐角；`corners` 按位置或两条线处理单个拐角，圆角自动加相切关系。
+- **关系**：水平、竖直、平行、垂直、共线、相等、相切、同心、对称、重合、点在线上、固定。关系必须已经成立，画之前就检查，求解器不需要挪动任何东西。基准 `@x_axis`、`@y_axis`、`@origin` 是基础基准面在草图上的投影，可直接引用。
+- **尺寸**：长度、半径、直径、角度、距离（关键点之间，或到整条水平/竖直线，可按 x / y / 对齐方向）。数值从几何量出；写了 `value` 的必须相符。`name` 让尺寸成为变量，`set_variable`、`sketch_dimensions` 和公式都能用。两线夹角按两条线起点到终点的方向计算（Solid Edge 的定义，正多边形相邻边得外角）。
+- **引用**：`references` 引入基准面投影（`type: plane`）或实体边（`type: edge`，面和边序号来自 `faces`；`project` 只作参照，`include` 成为轮廓的一部分）。
+- **旋转轴**：`axis` 指定一条线作为旋转轴，它不参与成面，之后交给 `revolve`。
+
+检查和核对：
+
+- 先在本地检查：开口端点、分叉、交叉、重叠、不成立的关系、对不上的尺寸。有缺陷时什么都不画，错误里带上问题清单和描述的 SVG。`dry_run=true` 只做这一步并返回 SVG。
+- 画完按 Solid Edge 的元素名逐个读回，比对坐标偏差、净面积、关系和每个尺寸在 Solid Edge 里的值，不一致就删除草图并报错。
+- 返回读回的元素、各环的角色/方向/面积/形心、净面积、包围盒、关系和尺寸（含变量名）、是否完全约束、平面在模型中的坐标系，以及按读回几何生成的 **SVG**（y 向上，单引号属性；尺寸标注在图上）。默认不出 PNG。
+- 返回的 `profile_id` 交给 `extrude` 或 `revolve`。空零件上的第一次拉伸/旋转要求体积与草图推算值完全一致（净面积 × 深度、帕普斯定理）。
+
+参数化修改：`sketch_dimensions` 的 `set` 接受 `{变量名: 值}`。改完重算整个零件，再核对每个尺寸的几何量是否等于 Solid Edge 的值、关系是否仍成立；任一不成立就恢复原值并报错。已被特征用过的草图也能改，返回里附上新的实体几何。
+
+编辑：`edit_sketch` 的每步都在描述上精确计算（不依赖 Solid Edge 的就地编辑，`Offset2d` 在轮廓结束后不生效），然后整张重画并按新草图核对，`profile_id` 不变，变量名保留。不再成立的关系和尺寸会被去掉并列在 `dropped` 里。关于草图线的镜像副本自动与原件保持对称。`dry_run=true` 只返回编辑后的描述和 SVG。
+
+`view_sketch` 不带参数列出全部草图；`sketch_index` 或 `profile_id` 返回与 `sketch` 相同的结构，本服务画的草图会带上关系、尺寸和变量名。拉伸用掉的草图也能按序号查看。
 
 ### 运行时修改指令
 
@@ -114,7 +148,7 @@ Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超�
 
 ### 开关
 
-每条指令的开关默认取 `EnabledByDefault`（现有 23 条都为开）。`se_load`/`se_unload` 带指令名切换的状态写入 `config/commands.json`（本机生成，不入库），服务重启后保持。可用 `--switches <文件>` 或环境变量 `SOLIDEDGE_MCP_SWITCHES` 指定别的位置；指令程序集位置可用 `--commands <dll>` 或 `SOLIDEDGE_MCP_COMMANDS` 指定。
+每条指令的开关默认取 `EnabledByDefault`（现有 30 条都为开）。`se_load`/`se_unload` 带指令名切换的状态写入 `config/commands.json`（本机生成，不入库），服务重启后保持。可用 `--switches <文件>` 或环境变量 `SOLIDEDGE_MCP_SWITCHES` 指定别的位置；指令程序集位置可用 `--commands <dll>` 或 `SOLIDEDGE_MCP_COMMANDS` 指定。
 
 ### 外壳与指令的分界
 
@@ -154,7 +188,7 @@ dotnet build .\SolidEdgeMcp.sln
 dotnet test .\SolidEdgeMcp.sln --no-build
 ```
 
-构建开启告警即错误（`Directory.Build.props`）。26 项自动化测试覆盖：草图解析与两种圆弧写法、开口/分叉/交叉/重叠检测、带圆弧和孔的精确面积与形心、SVG/PNG 生成、真实 stdio 握手与固定 4 工具、`se_find` 指令列表与 Schema、非法参数/未知参数/未知指令和错误响应、开关切换与持久化（含嵌套调用、默认关闭的指令）、程序集热换不锁文件、残缺构建保留旧版本、被替换的程序集可回收、输出路径和覆盖保护、文档 ID 失效、跨文档轮廓拒绝、未保存文档保护、COM 单线程（STA）生命周期、超时不重试写入、非有限数值不出线程、线程退出清理等。
+构建开启告警即错误（`Directory.Build.props`）。33 项自动化测试覆盖：草图解析与两种圆弧写法、简写展开与拐角的精确面积、关系与尺寸的核对、椭圆/样条/点/构造线、描述的 JSON 往返、偏移/镜像/修剪/延伸/打断/旋转编辑、开口/分叉/交叉/重叠检测、带圆弧和孔的精确面积与形心、SVG/PNG 生成、真实 stdio 握手与固定 4 工具、`se_find` 指令列表与 Schema、非法参数/未知参数/未知指令和错误响应、开关切换与持久化（含嵌套调用、默认关闭的指令）、程序集热换不锁文件、残缺构建保留旧版本、被替换的程序集可回收、输出路径和覆盖保护、文档 ID 失效、跨文档轮廓拒绝、未保存文档保护、COM 单线程（STA）生命周期、超时不重试写入、非有限数值不出线程、线程退出清理等。
 
 有 Solid Edge 的 Windows 机器可运行实机测试：
 
@@ -162,9 +196,9 @@ dotnet test .\SolidEdgeMcp.sln --no-build
 dotnet run --project .\scripts\LiveSmoke -- --keep-open
 ```
 
-它创建独立测试零件和带时间戳的输出目录；只关闭本次创建的文档。草图部分画一个带孔长圆形，核对读回零偏差、净面积、拉伸体积 = 净面积 × 深度，并确认自交草图被拒且不留残余；草图的 SVG/PNG 存在输出目录。中途在文档打开的状态下关、开一条指令，再卸载并重新载入整个指令程序集，确认原文档 ID 仍可用；开关文件写在本次输出目录，不动 `config/`。`--keep-open` 在成功后保留演示板。没有该选项时测试结束会关闭自己的文档。
+它创建独立测试零件和带时间戳的输出目录；只关闭本次创建的文档。草图部分画一个带孔长圆形，核对读回零偏差、净面积、拉伸体积 = 净面积 × 深度，并确认自交草图被拒且不留残余；再画一块相对基准完全约束的板，改 4 个命名尺寸后核对全部尺寸和关系，编辑重画后拉伸体积精确，在顶面建面加凸台，按帕普斯定理核对旋转体积，并画椭圆和样条；草图的 SVG/PNG 存在输出目录。中途在文档打开的状态下关、开一条指令，再卸载并重新载入整个指令程序集，确认原文档 ID 仍可用；开关文件写在本次输出目录，不动 `config/`。`--keep-open` 在成功后保留演示板。没有该选项时测试结束会关闭自己的文档。
 
-实机记录见 [VALIDATION.md](VALIDATION.md)，完整调用结果见 [verification.json](examples/demo/verification.json)。本次检查通过 4 个外壳工具和全部 25 条指令的调用，不代表全部参数组合或全部 Solid Edge 版本均已测试。
+实机记录见 [VALIDATION.md](VALIDATION.md)，完整调用结果见 [verification.json](examples/demo/verification.json)。本次检查通过 4 个外壳工具和全部 30 条指令的调用，不代表全部参数组合或全部 Solid Edge 版本均已测试。
 
 ## 项目结构
 
@@ -181,14 +215,15 @@ src/SolidEdgeMcp/             外壳（发布为 obj/app/SolidEdgeMcp.exe）
   Program.cs            stdio 启动、默认路径与环境诊断（--doctor）
 src/SolidEdgeMcp.Commands/    内部指令（构建到 obj/commands/，运行时热换）
   Kit/                  SeCommand 基类、参数规格与校验（ToolParameter）、内核操作（EdgeOps）、公用函数
-  Connection.cs Documents.cs Sketch.cs Solids.cs Query.cs Files.cs View.cs
-  Sketching/            草图描述解析、成环与面积形心、交叉检测、SVG/PNG、COM 绘制与读回
+  Connection.cs Documents.cs Sketch.cs Planes.cs Solids.cs Query.cs Files.cs View.cs
+  Sketching/            草图描述（元素、简写与拐角、关系、尺寸、引用）、成环与面积形心、交叉检测、
+                        关系与尺寸核对、编辑与偏移、SVG/PNG、COM 绘制与读回
 tests/SolidEdgeMcp.Tests/     不需要启动 Solid Edge 的回归测试（xunit）
 scripts/              安装、启动脚本；LiveSmoke/ 为实机冒烟客户端
 config/               当前机器的客户端配置与指令开关（生成，不入库）
 examples/demo/        实际生成的零件、STEP、PNG 和验证记录
 ```
 
-当前不包含装配约束、工程图、钣金、倒角/圆角、放样/扫掠或同步建模工具。后续在 `src/SolidEdgeMcp.Commands/` 增加指令类（明确参数、写入后回读确认），构建后 `se_load` 即可使用，并补相应实机验证。
+当前不包含装配约束、工程图、钣金、实体倒角/圆角、放样/扫掠或同步建模工具。后续在 `src/SolidEdgeMcp.Commands/` 增加指令类（明确参数、写入后回读确认），构建后 `se_load` 即可使用，并补相应实机验证。
 
 参考项目、提交号和许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

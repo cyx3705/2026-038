@@ -22,16 +22,17 @@ public sealed partial class SketchAnalysis
 
     private void Intersections()
     {
+        var region = Region.ToList();
         var size = Math.Max(Max.X - Min.X, Max.Y - Min.Y);
         // Root finding near tangency loses precision, so joints get a wider radius than node merging.
         var joint = Math.Max(1e-4, size * 1e-7);
-        for (var i = 0; i < Elements.Count; i++)
+        for (var i = 0; i < region.Count; i++)
         {
-            for (var j = i + 1; j < Elements.Count; j++)
+            for (var j = i + 1; j < region.Count; j++)
             {
-                var (a, b) = (Elements[i], Elements[j]);
+                var (a, b) = (region[i], region[j]);
                 var shared = new List<Pt>();
-                if (Ends(a) is { } ea && Ends(b) is { } eb)
+                if (Sketch.Ends(a) is { } ea && Sketch.Ends(b) is { } eb)
                 {
                     foreach (var p in new[] { ea.Start, ea.End })
                     {
@@ -39,24 +40,50 @@ public sealed partial class SketchAnalysis
                             shared.Add(p);
                     }
                 }
-                var (points, overlap) = Crossings(a, b);
+                var traced = a is EllipseEl or SplineEl || b is EllipseEl or SplineEl;
+                var (points, overlap) = traced ? (TracedCrossings(a, b), false) : Crossings(a, b);
                 if (overlap)
                 {
                     Issues.Add(new JsonObject { ["type"] = "overlap", ["entities"] = new JsonArray(a.Id, b.Id) });
                     continue;
                 }
                 var reported = new List<Pt>();
+                var near = traced ? Math.Max(joint, size * 1e-4) : joint;
                 foreach (var p in points)
                 {
-                    if (!OnCurve(a, p, _tol) || !OnCurve(b, p, _tol))
+                    if (!traced && (!OnCurve(a, p, _tol) || !OnCurve(b, p, _tol)))
                         continue;
-                    if (shared.Any(s => s.DistanceTo(p) <= joint) || reported.Any(r => r.DistanceTo(p) <= joint))
+                    if (shared.Any(s => s.DistanceTo(p) <= near) || reported.Any(r => r.DistanceTo(p) <= near))
                         continue;
                     reported.Add(p);
                     Issues.Add(new JsonObject { ["type"] = "intersection", ["entities"] = new JsonArray(a.Id, b.Id), ["at"] = Json(p) });
                 }
             }
         }
+    }
+
+    /// <summary>Crossings of the traced polylines, for curves without a closed-form intersection.</summary>
+    private static List<Pt> TracedCrossings(Element a, Element b)
+    {
+        var (pa, pb) = (Trace(a), Trace(b));
+        var result = new List<Pt>();
+        for (var i = 1; i < pa.Count; i++)
+        {
+            for (var j = 1; j < pb.Count; j++)
+            {
+                var r = pa[i] - pa[i - 1];
+                var s = pb[j] - pb[j - 1];
+                var denominator = Cross(r, s);
+                if (Math.Abs(denominator) < 1e-15)
+                    continue;
+                var qp = pb[j - 1] - pa[i - 1];
+                var t = Cross(qp, s) / denominator;
+                var u = Cross(qp, r) / denominator;
+                if (t >= 0 && t < 1 && u >= 0 && u < 1)
+                    result.Add(pa[i - 1] + r * t);
+            }
+        }
+        return result;
     }
 
     private (List<Pt> Points, bool Overlap) Crossings(Element a, Element b)

@@ -204,6 +204,114 @@ try
         Check(Close((double)afterExtrude["net_area_mm2"]!, net), "consumed sketch still readable");
         await Call("close_document", new() { ["document_id"] = slotId, ["discard_changes"] = true });
         created.Remove(slotId);
+        // Parametric sketch: a datum-located, fully constrained plate whose named dimensions drive it.
+        var plateId = (string)(await Call("new_part"))["document_id"]!;
+        created.Add(plateId);
+        var plate = await Call("sketch", new()
+        {
+            ["document_id"] = plateId,
+            ["entities"] = JsonNode.Parse("""
+                [{"id": "R", "type": "rectangle", "center": [0, 0], "size": [60, 40], "corner_radius": 5},
+                 {"id": "H1", "type": "circle", "center": [-20, 0], "radius": 3},
+                 {"id": "H2", "type": "circle", "center": [20, 0], "radius": 3}]
+                """),
+            ["relations"] = JsonNode.Parse("""
+                [{"type": "equal", "entities": ["R.f1", "R.f2"]}, {"type": "equal", "entities": ["R.f1", "R.f3"]},
+                 {"type": "equal", "entities": ["R.f1", "R.f4"]}, {"type": "equal", "entities": ["H1", "H2"]},
+                 {"type": "point_on", "point": ["H1", "center"], "target": "@x_axis"},
+                 {"type": "point_on", "point": ["H2", "center"], "target": "@x_axis"}]
+                """),
+            ["dimensions"] = JsonNode.Parse("""
+                [{"type": "distance", "from": "R.l", "to": "R.r", "name": "W"},
+                 {"type": "distance", "from": "R.b", "to": "R.t", "name": "H"},
+                 {"type": "distance", "from": "@y_axis", "to": "R.l"},
+                 {"type": "distance", "from": "@x_axis", "to": "R.b"},
+                 {"type": "radius", "entity": "R.f1", "name": "Rf"},
+                 {"type": "diameter", "entity": "H1", "name": "D"},
+                 {"type": "distance", "from": ["H1", "center"], "to": ["H2", "center"], "axis": "x", "name": "Pitch"},
+                 {"type": "distance", "from": "@y_axis", "to": ["H1", "center"]}]
+                """),
+        });
+        Check((bool)plate["fully_constrained"]! && (double)plate["max_deviation_mm"]! < 1e-6, "plate fully constrained as described");
+        var plateProfile = (string)plate["profile_id"]!;
+        var changed = await Call("sketch_dimensions", new()
+        {
+            ["document_id"] = plateId, ["profile_id"] = plateProfile,
+            ["set"] = new JsonObject { ["W"] = 80, ["H"] = 30, ["Pitch"] = 50, ["Rf"] = 3 },
+        });
+        Check(changed["issues"]!.AsArray().Count == 0, "dimension change keeps every relation and dimension");
+        Check(changed["dimensions"]!.AsArray().All(d => Math.Abs((double)d!["value"]! - (double)d["se_value"]!) < 1e-6),
+            "geometry measures what Solid Edge holds");
+        var corner = changed["entities"]!.AsArray().Single(e => (string)e!["id"]! == "R.l")!["start"]!.AsArray();
+        Check(Math.Abs((double)corner[0]! + 30) < 1e-6, "datum-located edge stays put");
+        var edited = await Call("edit_sketch", new()
+        {
+            ["document_id"] = plateId, ["profile_id"] = plateProfile,
+            ["operations"] = JsonNode.Parse("""
+                [{"op": "delete", "entities": ["H2"]},
+                 {"op": "add", "entities": [{"id": "S", "type": "slot", "center": [15, 0], "length": 20, "width": 8}]},
+                 {"op": "mirror", "entities": ["H1"], "axis": [[10, -50], [10, 50]], "suffix": "_r"}]
+                """),
+        });
+        Check((string)edited["profile_id"]! == plateProfile && edited["dropped"]!.AsArray().Count == 3, "edit redraws under the same profile");
+        var plateNet = (double)edited["net_area_mm2"]!;
+        var plateSolid = await Call("extrude", new() { ["document_id"] = plateId, ["profile_id"] = plateProfile, ["distance_mm"] = 10 });
+        Check(Close(Volume(plateSolid["geometry"]!), plateNet * 10), "edited plate volume = net area x depth");
+        File.WriteAllText(Path.Combine(outputDir, "sketch-plate.svg"), (string)edited["svg"]!);
+        // A sketch on a plane through the top face, related to body edges.
+        var faces = await Call("faces", new() { ["document_id"] = plateId });
+        var top = faces["faces"]!.AsArray().First(f => (string)f!["kind"]! == "plane"
+            && ((JsonArray)f["normal"]!).Select(v => (double)v!).SequenceEqual([0.0, 0.0, 1.0])
+            && Math.Abs((double)((JsonArray)f["origin_mm"]!)[2]! - 10) < 1e-6)!;
+        var plane = await Call("create_plane", new() { ["document_id"] = plateId, ["face"] = (int)top["face"]!, ["offset_mm"] = 0 });
+        var boss = await Call("sketch", new()
+        {
+            ["document_id"] = plateId, ["plane_index"] = (int)plane["plane_index"]!,
+            ["entities"] = JsonNode.Parse("""[{"id": "B", "type": "circle", "center": [-25, 5], "radius": 4}]"""),
+            ["dimensions"] = JsonNode.Parse("""[{"type": "diameter", "entity": "B", "name": "Boss"}]"""),
+        });
+        var bossSolid = await Call("extrude", new() { ["document_id"] = plateId, ["profile_id"] = (string)boss["profile_id"]!, ["distance_mm"] = 5 });
+        Check(Close(Volume(bossSolid["geometry"]!), plateNet * 10 + Math.PI * 16 * 5), "boss on the top face");
+        // Revolve about a sketch line: Pappus's theorem gives the exact volume.
+        var turnedId = (string)(await Call("new_part"))["document_id"]!;
+        created.Add(turnedId);
+        var turned = await Call("sketch", new()
+        {
+            ["document_id"] = turnedId, ["plane_index"] = 3,
+            ["entities"] = JsonNode.Parse("""
+                [{"id": "P", "type": "polyline", "points": [[10, 0], [30, 0], [30, 5], [15, 5], [15, 30], [10, 30]], "closed": true},
+                 {"id": "AX", "type": "line", "start": [0, -5], "end": [0, 40]}]
+                """),
+            ["corners"] = JsonNode.Parse("""[{"at": [15, 5], "fillet": 3}]"""),
+            ["axis"] = "AX",
+        });
+        var area = (double)turned["loops"]![0]!["area_mm2"]!;
+        var centroid = (double)turned["loops"]![0]!["centroid_mm"]![0]!;
+        var revolved = await Call("revolve", new() { ["document_id"] = turnedId, ["profile_id"] = (string)turned["profile_id"]! });
+        Check(Math.Abs(Volume(revolved["geometry"]!) - 2 * Math.PI * area * centroid) < 1e-3, "revolve volume = 2 pi x area x centroid radius");
+        // Curves: a hexagon with an elliptical hole and a spline island, related to the datums.
+        var curves = await Call("sketch", new()
+        {
+            ["document_id"] = turnedId, ["plane_index"] = 1,
+            ["entities"] = JsonNode.Parse("""
+                [{"id": "HX", "type": "polygon", "center": [0, 0], "radius": 20, "sides": 6},
+                 {"id": "E", "type": "ellipse", "center": [0, 0], "major_radius": 8, "minor_radius": 4, "angle": 30},
+                 {"id": "K", "type": "spline", "points": [[35, 0], [45, 8], [55, 0], [45, -8]], "closed": true},
+                 {"id": "CL", "type": "line", "start": [-25, 0], "end": [60, 0], "construction": true}]
+                """),
+            ["relations"] = JsonNode.Parse("""
+                [{"type": "symmetric", "axis": "CL", "entities": ["HX.1", "HX.3"]},
+                 {"type": "coincident", "points": [["E", "center"], "@origin"]},
+                 {"type": "collinear", "entities": ["CL", "@x_axis"]}]
+                """),
+            ["dimensions"] = JsonNode.Parse("""[{"type": "angle", "entities": ["HX.1", "HX.2"], "value": 60}]"""),
+        });
+        Check(curves["issues"]!.AsArray().Count == 0 && (double)curves["max_deviation_mm"]! < 1e-6, "ellipse and spline read back");
+        File.WriteAllText(Path.Combine(outputDir, "sketch-curves.svg"), (string)curves["svg"]!);
+        await Call("close_document", new() { ["document_id"] = plateId, ["discard_changes"] = true });
+        created.Remove(plateId);
+        await Call("close_document", new() { ["document_id"] = turnedId, ["discard_changes"] = true });
+        created.Remove(turnedId);
         foreach (var orientation in new[] { "Front", "Top", "Right", "Iso" })
             await Call("set_view", new() { ["document_id"] = docId, ["orientation"] = orientation });
         report["unique_commands_exercised"] = new JsonArray(

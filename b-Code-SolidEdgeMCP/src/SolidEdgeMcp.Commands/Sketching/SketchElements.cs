@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.Json;
 
 namespace SolidEdgeMcp.Commands.Sketching;
 
@@ -16,17 +15,40 @@ public readonly record struct Pt(double X, double Y)
 
     public double DistanceTo(Pt other) => (this - other).Length;
 
+    public Pt Unit => this * (1 / Length);
+
+    public static double Dot(Pt a, Pt b) => a.X * b.X + a.Y * b.Y;
+
+    public static double Cross(Pt a, Pt b) => a.X * b.Y - a.Y * b.X;
+
     public static Pt Polar(Pt center, double radius, double angle) =>
         new(center.X + radius * Math.Cos(angle), center.Y + radius * Math.Sin(angle));
+
+    public double AngleFrom(Pt center) => Math.Atan2(Y - center.Y, X - center.X);
 }
 
-/// <summary>One sketch element. Coordinates are millimeters, angles radians, counterclockwise positive.</summary>
+/// <summary>
+/// One sketch element. Coordinates are millimeters, angles radians, counterclockwise positive.
+/// Construction elements and points never form regions; external elements come from the model
+/// (projected or included edges, datum planes) and are not drawn by the description.
+/// </summary>
 public abstract record Element(string Id)
 {
     /// <summary>Solid Edge's own name once the element exists in a profile.</summary>
     public string? SeName { get; init; }
 
+    public bool Construction { get; init; }
+
+    /// <summary>True for geometry that already exists in the model (references, datums).</summary>
+    public bool External { get; init; }
+
+    /// <summary>The shorthand (rectangle, slot...) this element was expanded from.</summary>
+    public string? Group { get; init; }
+
     public abstract string Kind { get; }
+
+    /// <summary>Takes part in loops, areas and crossing checks.</summary>
+    public bool Profile => !Construction && this is not PointEl;
 }
 
 public sealed record LineEl(string Id, Pt Start, Pt End) : Element(Id)
@@ -34,6 +56,8 @@ public sealed record LineEl(string Id, Pt Start, Pt End) : Element(Id)
     public override string Kind => "line";
 
     public double Length => Start.DistanceTo(End);
+
+    public Pt Direction => (End - Start).Unit;
 }
 
 /// <summary>Arc from <see cref="Start"/> to <see cref="End"/>; Sweep is signed (+ counterclockwise).</summary>
@@ -49,6 +73,22 @@ public sealed record ArcEl(string Id, Pt Center, double Radius, double StartAngl
         new(id, center, radius, startAngle, sweep,
             Pt.Polar(center, radius, startAngle), Pt.Polar(center, radius, startAngle + sweep));
 
+    /// <summary>Arc through three points: start, a point on the arc, end.</summary>
+    public static ArcEl? Through(string id, Pt start, Pt along, Pt end)
+    {
+        var d = 2 * Pt.Cross(along - start, end - start);
+        if (Math.Abs(d) < 1e-12)
+            return null;
+        double a2 = Pt.Dot(start, start), b2 = Pt.Dot(along, along), c2 = Pt.Dot(end, end);
+        var center = new Pt(
+            (a2 * (along.Y - end.Y) + b2 * (end.Y - start.Y) + c2 * (start.Y - along.Y)) / d,
+            (a2 * (end.X - along.X) + b2 * (start.X - end.X) + c2 * (along.X - start.X)) / d);
+        var a0 = start.AngleFrom(center);
+        var ccw = Sketch.Normalize(end.AngleFrom(center) - a0);
+        var viaAlong = Sketch.Normalize(along.AngleFrom(center) - a0) < ccw;
+        return new ArcEl(id, center, start.DistanceTo(center), a0, viaAlong ? ccw : ccw - 2 * Math.PI, start, end);
+    }
+
     /// <summary>True when <paramref name="angle"/> lies on the arc, allowing <paramref name="slack"/> radians.</summary>
     public bool Contains(double angle, double slack)
     {
@@ -63,7 +103,40 @@ public sealed record CircleEl(string Id, Pt Center, double Radius) : Element(Id)
     public override string Kind => "circle";
 }
 
-/// <summary>Parsing of the declarative sketch description and shared numeric helpers.</summary>
+/// <summary>Full ellipse; <see cref="Angle"/> is the direction of the major axis.</summary>
+public sealed record EllipseEl(string Id, Pt Center, double MajorRadius, double MinorRadius, double Angle) : Element(Id)
+{
+    public override string Kind => "ellipse";
+
+    public Pt At(double t)
+    {
+        double c = Math.Cos(Angle), s = Math.Sin(Angle);
+        double x = MajorRadius * Math.Cos(t), y = MinorRadius * Math.Sin(t);
+        return new Pt(Center.X + x * c - y * s, Center.Y + x * s + y * c);
+    }
+}
+
+/// <summary>Curve through <see cref="Points"/>. Its exact shape is Solid Edge's own fit; measures are approximate.</summary>
+public sealed record SplineEl(string Id, IReadOnlyList<Pt> Points, bool Closed) : Element(Id)
+{
+    public override string Kind => "spline";
+
+    public Pt Start => Points[0];
+
+    public Pt End => Closed ? Points[0] : Points[^1];
+
+    public bool Equals(SplineEl? other) =>
+        other is not null && Id == other.Id && Closed == other.Closed && Points.SequenceEqual(other.Points);
+
+    public override int GetHashCode() => HashCode.Combine(Id, Closed, Points.Count);
+}
+
+public sealed record PointEl(string Id, Pt At) : Element(Id)
+{
+    public override string Kind => "point";
+}
+
+/// <summary>Numeric helpers shared by the sketch code.</summary>
 public static class Sketch
 {
     public const double Tolerance = 1e-6; // mm; endpoints closer than this are the same point
@@ -85,144 +158,120 @@ public static class Sketch
 
     public static string Format(double value) => Round(value).ToString("0.######", CultureInfo.InvariantCulture);
 
-    /// <summary>JSON schema for the "entities" argument, advertised through se_find.</summary>
-    public static JsonObject EntitiesSchema()
+    public static (Pt Start, Pt End)? Ends(Element element) => element switch
     {
-        JsonObject Point(string description) => new()
-        {
-            ["type"] = "array",
-            ["items"] = new JsonObject { ["type"] = "number" },
-            ["minItems"] = 2,
-            ["maxItems"] = 2,
-            ["description"] = description,
-        };
-        return new JsonObject
-        {
-            ["minItems"] = 1,
-            ["maxItems"] = MaxElements,
-            ["description"] =
-                "Sketch elements in plane-local mm. line: start,end. circle: center,radius. "
-                + "arc: either center+start+end (counterclockwise from start to end unless clockwise=true; "
-                + "start and end must be equidistant from center) or center+radius+start_angle+end_angle "
-                + "(degrees, counterclockwise from start_angle to end_angle). Endpoints that coincide are "
-                + "joined automatically; every chain must close. Inner closed loops become holes.",
-            ["items"] = new JsonObject
-            {
-                ["type"] = "object",
-                ["required"] = new JsonArray("id", "type"),
-                ["properties"] = new JsonObject
-                {
-                    ["id"] = new JsonObject { ["type"] = "string", ["description"] = "Your name for the element, echoed in the result." },
-                    ["type"] = new JsonObject { ["enum"] = new JsonArray("line", "arc", "circle") },
-                    ["start"] = Point("[x, y] start point (line, arc)"),
-                    ["end"] = Point("[x, y] end point (line, arc)"),
-                    ["center"] = Point("[x, y] center (arc, circle)"),
-                    ["radius"] = new JsonObject { ["type"] = "number", ["exclusiveMinimum"] = 0 },
-                    ["start_angle"] = new JsonObject { ["type"] = "number", ["description"] = "degrees" },
-                    ["end_angle"] = new JsonObject { ["type"] = "number", ["description"] = "degrees" },
-                    ["clockwise"] = new JsonObject { ["type"] = "boolean", ["default"] = false },
-                },
-            },
-        };
-    }
+        LineEl line => (line.Start, line.End),
+        ArcEl arc => (arc.Start, arc.End),
+        SplineEl { Closed: false } spline => (spline.Start, spline.End),
+        _ => null,
+    };
 
-    public static List<Element> Parse(JsonElement entities)
+    /// <summary>Keypoint names accepted in relations and dimensions, per element kind.</summary>
+    public static string[] Keys(Element element) => element switch
     {
-        var result = new List<Element>();
-        var ids = new HashSet<string>(StringComparer.Ordinal);
-        var index = 0;
-        foreach (var item in entities.EnumerateArray())
+        LineEl => ["start", "end", "mid"],
+        ArcEl => ["center", "start", "end", "mid"],
+        CircleEl or EllipseEl => ["center"],
+        SplineEl { Closed: false } => ["start", "end"],
+        PointEl => ["point"],
+        _ => [],
+    };
+
+    public static Pt Keypoint(Element element, string key) => (element, key) switch
+    {
+        (LineEl l, "start") => l.Start,
+        (LineEl l, "end") => l.End,
+        (LineEl l, "mid") => (l.Start + l.End) * 0.5,
+        (ArcEl a, "center") => a.Center,
+        (ArcEl a, "start") => a.Start,
+        (ArcEl a, "end") => a.End,
+        (ArcEl a, "mid") => a.Mid,
+        (CircleEl c, "center") => c.Center,
+        (EllipseEl e, "center") => e.Center,
+        (SplineEl s, "start") => s.Start,
+        (SplineEl s, "end") => s.End,
+        (PointEl p, "point") => p.At,
+        _ => throw new EdgeError($"{element.Id} has no keypoint '{key}'; use one of {string.Join(", ", Keys(element))}."),
+    };
+
+    /// <summary>constant.tlb KeypointIndexConstants for the same names.</summary>
+    public static int KeypointIndex(Element element, string key) => (element, key) switch
+    {
+        (LineEl, "start") => 0,
+        (LineEl, "end") => 1,
+        (LineEl, "mid") => 2,
+        (ArcEl, "center") => 0,
+        (ArcEl, "start") => 1,
+        (ArcEl, "end") => 2,
+        (ArcEl, "mid") => 3,
+        (SplineEl, "start") => 0,
+        (SplineEl, "end") => 1,
+        _ => 0,
+    };
+
+    /// <summary>
+    /// Centripetal Catmull-Rom samples through the spline's points: the stand-in for Solid Edge's
+    /// own fit wherever a measure needs the curve between the points.
+    /// </summary>
+    public static List<Pt> Sample(SplineEl spline, int perSpan = 16)
+    {
+        var p = spline.Points;
+        var n = p.Count;
+        Pt Get(int i) => spline.Closed ? p[((i % n) + n) % n] : p[Math.Clamp(i, 0, n - 1)];
+        var spans = spline.Closed ? n : n - 1;
+        var result = new List<Pt>();
+        for (var i = 0; i < spans; i++)
         {
-            var where = $"entities[{index++}]";
-            if (index > MaxElements)
-                throw new EdgeError($"At most {MaxElements} sketch elements per call.");
-            if (item.ValueKind != JsonValueKind.Object)
-                throw new EdgeError($"{where}: expected an object.");
-            var id = Text(item, "id", where);
-            if (id.Length is 0 or > 64 || !ids.Add(id))
-                throw new EdgeError($"{where}: id must be unique and 1-64 characters.");
-            where = $"{where} ({id})";
-            var kind = Text(item, "type", where);
-            Element element = kind switch
+            Pt p0 = Get(i - 1), p1 = Get(i), p2 = Get(i + 1), p3 = Get(i + 2);
+            if (!spline.Closed && i == 0)
+                p0 = p1 - (p2 - p1);
+            if (!spline.Closed && i == spans - 1)
+                p3 = p2 + (p2 - p1);
+            double Knot(double t, Pt a, Pt b) => t + Math.Sqrt(Math.Max(a.DistanceTo(b), 1e-12));
+            double t0 = 0, t1 = Knot(t0, p0, p1), t2 = Knot(t1, p1, p2), t3 = Knot(t2, p2, p3);
+            for (var k = 0; k < perSpan; k++)
             {
-                "line" => Line(item, id, where),
-                "circle" => new CircleEl(id, Point(item, "center", where), Positive(item, "radius", where)),
-                "arc" => Arc(item, id, where),
-                _ => throw new EdgeError($"{where}: type must be line, arc or circle."),
-            };
-            result.Add(element);
+                var t = t1 + (t2 - t1) * k / perSpan;
+                Pt Lerp(Pt a, Pt b, double ta, double tb) => a * ((tb - t) / (tb - ta)) + b * ((t - ta) / (tb - ta));
+                var a1 = Lerp(p0, p1, t0, t1);
+                var a2 = Lerp(p1, p2, t1, t2);
+                var a3 = Lerp(p2, p3, t2, t3);
+                var b1 = Lerp(a1, a2, t0, t2);
+                var b2 = Lerp(a2, a3, t1, t3);
+                result.Add(Lerp(b1, b2, t1, t2));
+            }
         }
-        if (result.Count == 0)
-            throw new EdgeError("entities must contain at least one element.");
+        result.Add(spline.Closed ? p[0] : p[^1]);
         return result;
     }
 
-    private static LineEl Line(JsonElement item, string id, string where)
+    /// <summary>
+    /// The same stand-in curve as cubic Bezier spans (start, control 1, control 2, end): the
+    /// Barry-Goldman construction above is a cubic Hermite span with these end tangents.
+    /// </summary>
+    public static List<(Pt P1, Pt C1, Pt C2, Pt P2)> Beziers(SplineEl spline)
     {
-        var line = new LineEl(id, Point(item, "start", where), Point(item, "end", where));
-        if (line.Length <= Tolerance)
-            throw new EdgeError($"{where}: start and end coincide.");
-        return line;
-    }
-
-    private static ArcEl Arc(JsonElement item, string id, string where)
-    {
-        var center = Point(item, "center", where);
-        if (item.TryGetProperty("start_angle", out _) || item.TryGetProperty("end_angle", out _))
+        var p = spline.Points;
+        var n = p.Count;
+        Pt Get(int i) => spline.Closed ? p[((i % n) + n) % n] : p[Math.Clamp(i, 0, n - 1)];
+        var spans = spline.Closed ? n : n - 1;
+        var result = new List<(Pt, Pt, Pt, Pt)>();
+        for (var i = 0; i < spans; i++)
         {
-            var radius = Positive(item, "radius", where);
-            var from = Rad(Number(item, "start_angle", where));
-            var sweep = Normalize(Rad(Number(item, "end_angle", where)) - from);
-            if (sweep * radius <= Tolerance)
-                throw new EdgeError($"{where}: start_angle and end_angle give an empty arc; use a circle for 360 degrees.");
-            return ArcEl.FromAngles(id, center, radius, from, sweep);
+            Pt p0 = Get(i - 1), p1 = Get(i), p2 = Get(i + 1), p3 = Get(i + 2);
+            if (!spline.Closed && i == 0)
+                p0 = p1 - (p2 - p1);
+            if (!spline.Closed && i == spans - 1)
+                p3 = p2 + (p2 - p1);
+            double Gap(Pt a, Pt b) => Math.Sqrt(Math.Max(a.DistanceTo(b), 1e-12));
+            double d0 = Gap(p0, p1), d1 = Gap(p1, p2), d2 = Gap(p2, p3);
+            var m1 = (p1 - p0) * (1 / d0) - (p2 - p0) * (1 / (d0 + d1)) + (p2 - p1) * (1 / d1);
+            var m2 = (p2 - p1) * (1 / d1) - (p3 - p1) * (1 / (d1 + d2)) + (p3 - p2) * (1 / d2);
+            result.Add((p1, p1 + m1 * (d1 / 3), p2 - m2 * (d1 / 3), p2));
         }
-        var start = Point(item, "start", where);
-        var end = Point(item, "end", where);
-        var r = start.DistanceTo(center);
-        if (r <= Tolerance)
-            throw new EdgeError($"{where}: start coincides with center.");
-        if (Math.Abs(end.DistanceTo(center) - r) > Math.Max(Tolerance, r * 1e-9))
-            throw new EdgeError($"{where}: start and end are not the same distance from center "
-                + $"({Format(r)} vs {Format(end.DistanceTo(center))}).");
-        if (start.DistanceTo(end) <= Tolerance)
-            throw new EdgeError($"{where}: start and end coincide; use a circle for a full turn.");
-        var a0 = Math.Atan2(start.Y - center.Y, start.X - center.X);
-        var a1 = Math.Atan2(end.Y - center.Y, end.X - center.X);
-        var clockwise = item.TryGetProperty("clockwise", out var cw) && cw.ValueKind == JsonValueKind.True;
-        var span = clockwise ? -Normalize(a0 - a1) : Normalize(a1 - a0);
-        return new ArcEl(id, center, r, a0, span, start, end);
+        return result;
     }
 
-    private static string Text(JsonElement item, string name, string where) =>
-        item.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
-            ? value.GetString()!
-            : throw new EdgeError($"{where}: {name} must be a string.");
-
-    private static double Number(JsonElement item, string name, string where)
-    {
-        if (!item.TryGetProperty(name, out var value) || value.ValueKind != JsonValueKind.Number)
-            throw new EdgeError($"{where}: {name} must be a number.");
-        var number = value.GetDouble();
-        return double.IsFinite(number) && Math.Abs(number) <= MaxCoordinate
-            ? number
-            : throw new EdgeError($"{where}: {name} is out of range.");
-    }
-
-    private static double Positive(JsonElement item, string name, string where)
-    {
-        var number = Number(item, name, where);
-        return number > Tolerance ? number : throw new EdgeError($"{where}: {name} must be positive.");
-    }
-
-    private static Pt Point(JsonElement item, string name, string where)
-    {
-        if (!item.TryGetProperty(name, out var value) || value.ValueKind != JsonValueKind.Array || value.GetArrayLength() != 2
-            || value[0].ValueKind != JsonValueKind.Number || value[1].ValueKind != JsonValueKind.Number)
-            throw new EdgeError($"{where}: {name} must be [x, y].");
-        double x = value[0].GetDouble(), y = value[1].GetDouble();
-        if (!double.IsFinite(x) || !double.IsFinite(y) || Math.Abs(x) > MaxCoordinate || Math.Abs(y) > MaxCoordinate)
-            throw new EdgeError($"{where}: {name} is out of range.");
-        return new Pt(x, y);
-    }
+    public static List<Pt> Sample(EllipseEl ellipse, int count = 180) =>
+        Enumerable.Range(0, count + 1).Select(i => ellipse.At(2 * Math.PI * i / count)).ToList();
 }
