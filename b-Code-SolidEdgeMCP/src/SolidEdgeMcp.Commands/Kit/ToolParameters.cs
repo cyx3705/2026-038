@@ -2,11 +2,13 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace SolidEdgeMcp;
+namespace SolidEdgeMcp.Commands;
 
 /// <summary>
 /// One tool argument. The same spec emits the advertised JSON schema and validates incoming calls,
-/// so what a client is told and what the server accepts cannot drift apart.
+/// so what a client is told and what the server accepts cannot drift apart. <see cref="Extra"/>
+/// carries extra schema keywords (items, properties, description...) for structured arguments;
+/// <see cref="Read"/> checks only their top-level type and the command validates the inside.
 /// </summary>
 public sealed record ToolParameter(
     string Name,
@@ -17,7 +19,8 @@ public sealed record ToolParameter(
     double? ExclusiveMinimum = null,
     double? Maximum = null,
     string[]? Choices = null,
-    bool Nullable = false)
+    bool Nullable = false,
+    JsonObject? Extra = null)
 {
     public const double Limit = 1_000_000;
 
@@ -39,6 +42,9 @@ public sealed record ToolParameter(
     public static ToolParameter Flag(string name, bool fallback) => new(name, "boolean", false, fallback);
 
     public static ToolParameter OptionalObject(string name) => new(name, "object", false, null, Nullable: true);
+
+    /// <summary>A required structured argument ("array" or "object") with its full JSON schema.</summary>
+    public static ToolParameter Structured(string name, string type, JsonObject schema) => new(name, type, Extra: schema);
 
     public static ToolParameter Choice(string name, params string[] choices) => new(name, "string", Choices: choices);
 
@@ -62,10 +68,12 @@ public sealed record ToolParameter(
             schema["maximum"] = maximum;
         if (!Required)
             schema["default"] = Default?.DeepClone();
+        foreach (var (key, value) in Extra ?? [])
+            schema[key] = value?.DeepClone();
         return schema;
     }
 
-    public static JsonElement ObjectSchema(IEnumerable<ToolParameter> parameters)
+    public static JsonObject ObjectSchema(IEnumerable<ToolParameter> parameters)
     {
         var list = parameters.ToList();
         var properties = new JsonObject();
@@ -77,7 +85,7 @@ public sealed record ToolParameter(
             ["properties"] = properties,
             ["required"] = new JsonArray(list.Where(p => p.Required).Select(p => (JsonNode)p.Name).ToArray()),
         };
-        return JsonSerializer.SerializeToElement(schema);
+        return schema;
     }
 
     /// <summary>Check one argument against this spec and return it as a plain CLR value.</summary>
@@ -103,6 +111,7 @@ public sealed record ToolParameter(
             "number" when value.ValueKind == JsonValueKind.Number => value.GetDouble(),
             "integer" when value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var whole) => whole,
             "object" when value.ValueKind == JsonValueKind.Object => value.Clone(),
+            "array" when value.ValueKind == JsonValueKind.Array => value.Clone(),
             _ => throw new EdgeError($"Invalid argument {Name}: expected {Type}."),
         };
         if (Choices is not null && !Choices.Contains((string)result))
@@ -137,4 +146,6 @@ public sealed class ToolArguments(IReadOnlyDictionary<string, object?> values)
     public bool Flag(string name) => (bool)values[name]!;
 
     public JsonElement? OptionalObject(string name) => (JsonElement?)values[name];
+
+    public JsonElement Element(string name) => (JsonElement)values[name]!;
 }

@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
-using static SolidEdgeMcp.ToolParameter;
 
 namespace SolidEdgeMcp;
 
@@ -51,8 +50,53 @@ public static class SolidEdgeServer
         string Name,
         string Description,
         ToolAnnotations Annotations,
-        ToolParameter[] Parameters,
-        Func<ToolArguments, Task<CallToolResult>> Handler);
+        JsonObject Schema,
+        Func<Args, Task<CallToolResult>> Handler);
+
+    /// <summary>Raw arguments of one of the four shell tools.</summary>
+    private sealed class Args(IReadOnlyDictionary<string, JsonElement>? values)
+    {
+        public string? Text(string name, bool required = false)
+        {
+            if (values is null || !values.TryGetValue(name, out var value) || value.ValueKind == JsonValueKind.Null)
+                return required ? throw new EdgeError($"Missing required argument: {name}.") : null;
+            return value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : throw new EdgeError($"Invalid argument {name}: expected string.");
+        }
+
+        public JsonObject Object(string name)
+        {
+            if (values is null || !values.TryGetValue(name, out var value) || value.ValueKind == JsonValueKind.Null)
+                return [];
+            return value.ValueKind == JsonValueKind.Object
+                ? JsonNode.Parse(value.GetRawText())!.AsObject()
+                : throw new EdgeError($"Invalid argument {name}: expected object.");
+        }
+    }
+
+    private static JsonObject Nullable(string type) => new()
+    {
+        ["anyOf"] = new JsonArray(new JsonObject { ["type"] = type }, new JsonObject { ["type"] = "null" }),
+        ["default"] = null,
+    };
+
+    /// <summary>Schema of a shell tool: "command" (required or optional) plus extra properties.</summary>
+    private static JsonObject Schema(bool commandRequired, params (string Name, JsonObject Schema)[] extra)
+    {
+        var properties = new JsonObject
+        {
+            ["command"] = commandRequired ? new JsonObject { ["type"] = "string" } : Nullable("string"),
+        };
+        foreach (var (name, schema) in extra)
+            properties[name] = schema;
+        return new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = properties,
+            ["required"] = commandRequired ? new JsonArray("command") : new JsonArray(),
+        };
+    }
 
     public static McpServerOptions CreateOptions(ComWorker<SolidEdgeBackend> com, CommandRegistry registry)
     {
@@ -62,7 +106,7 @@ public static class SolidEdgeServer
             Name = t.Name,
             Description = t.Description,
             Annotations = t.Annotations,
-            InputSchema = ObjectSchema(t.Parameters),
+            InputSchema = JsonSerializer.SerializeToElement(t.Schema),
         }).ToList();
 
         return new McpServerOptions
@@ -80,9 +124,7 @@ public static class SolidEdgeServer
                         return Error($"Unknown tool: {name}");
                     try
                     {
-                        var arguments = request.Params?.Arguments as IReadOnlyDictionary<string, JsonElement>;
-                        var values = tool.Parameters.ToDictionary(p => p.Name, p => p.Read(arguments));
-                        return await tool.Handler(new ToolArguments(values));
+                        return await tool.Handler(new Args(request.Params?.Arguments as IReadOnlyDictionary<string, JsonElement>));
                     }
                     catch (EdgeError exc)
                     {
@@ -135,29 +177,26 @@ public static class SolidEdgeServer
     {
         yield return new ToolSpec("se_find",
             "List internal commands with kind, on/off switch and description; with command=<name>, return its input schema.",
-            ReadOnly, [OptionalText("command")],
-            a => Task.FromResult(Success(registry.Describe(a.OptionalText("command")))));
+            ReadOnly, Schema(false),
+            a => Task.FromResult(Success(registry.Describe(a.Text("command")))));
         yield return new ToolSpec("se_call",
             "Run one enabled internal command. arguments must match the schema from se_find.",
-            Write, [Text("command"), OptionalObject("arguments")],
+            Write, Schema(true, ("arguments", Nullable("object"))),
             async a =>
             {
-                var command = registry.Get(a.Text("command"));
-                var arguments = a.OptionalObject("arguments") is { } element
-                    ? element.Deserialize<Dictionary<string, JsonElement>>()
-                    : null;
-                var values = CommandRegistry.Arguments(command, arguments);
+                var command = registry.Get(a.Text("command", required: true)!);
+                var arguments = a.Object("arguments");
                 CommandOutput? output = null;
-                var data = await com.CallAsync(b => (output = registry.Execute(b, command, values)).Data);
+                var data = await com.CallAsync(b => (output = registry.Execute(b, command, arguments)).Data);
                 return Success(data, output?.Png);
             });
         yield return new ToolSpec("se_load",
             "No arguments: hot-reload the commands assembly after a rebuild. command=<name>: switch that command on.",
-            Toggle, [OptionalText("command")],
-            a => Task.FromResult(Success(registry.Load(a.OptionalText("command")))));
+            Toggle, Schema(false),
+            a => Task.FromResult(Success(registry.Load(a.Text("command")))));
         yield return new ToolSpec("se_unload",
             "command=<name>: switch that command off. No arguments: unload the whole commands assembly.",
-            Toggle, [OptionalText("command")],
-            a => Task.FromResult(Success(registry.Unload(a.OptionalText("command")))));
+            Toggle, Schema(false),
+            a => Task.FromResult(Success(registry.Unload(a.Text("command")))));
     }
 }

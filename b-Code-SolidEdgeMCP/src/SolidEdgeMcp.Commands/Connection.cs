@@ -3,7 +3,7 @@ namespace SolidEdgeMcp.Commands;
 public sealed class Status() : SeCommand("status", CommandKind.Read,
     "Get connection state, Solid Edge version, and output directory; never launch CAD.")
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var app = c.Edge.App;
         var result = new JsonObject { ["connected"] = app is not null, ["output_root"] = c.Edge.Paths.Root };
@@ -20,7 +20,7 @@ public sealed class Connect() : SeCommand("connect", CommandKind.Create,
     "Attach to Solid Edge; optionally launch it. Keep CAD visible for interactive work.",
     Flag("start_if_needed", true), Flag("visible", true))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var edge = c.Edge;
         if (edge.App is not null)
@@ -60,5 +60,5 @@ public sealed class Connect() : SeCommand("connect", CommandKind.Create,
 public sealed class Disconnect() : SeCommand("disconnect", CommandKind.Create,
     "Release COM references and invalidate IDs. Leave Solid Edge and documents open.")
 {
-    public override CommandOutput Execute(CommandContext c) => c.Edge.Disconnect();
+    public override CommandOutput Execute(CommandCall c) => c.Edge.Disconnect();
 }

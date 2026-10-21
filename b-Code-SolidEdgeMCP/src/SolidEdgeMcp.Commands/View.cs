@@ -7,7 +7,7 @@ public sealed class SetView() : SeCommand("set_view", CommandKind.Create,
     "Activate this part, apply a named view, and fit the geometry in the window.",
     Text("document_id"), Choice("orientation", "Iso", "Iso", "Front", "Top", "Right"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var orientation = c.Args.Text("orientation");
@@ -25,7 +25,7 @@ public sealed class CaptureViewport() : SeCommand("capture_viewport", CommandKin
     Text("document_id"), new ToolParameter("path", "string", false, "viewport.png"), Integer("width", 1280, 64, 4096),
     Integer("height", 960, 64, 4096), Flag("overwrite", false))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var overwrite = c.Args.Flag("overwrite");

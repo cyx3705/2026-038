@@ -4,7 +4,7 @@ public sealed class SaveDocument() : SeCommand("save_document", CommandKind.Writ
     "Save a native .par inside the output root. Existing files need overwrite=true.",
     Text("document_id"), OptionalText("path"), Flag("overwrite", false))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var path = c.Args.OptionalText("path");
@@ -30,7 +30,7 @@ public sealed class SaveDocument() : SeCommand("save_document", CommandKind.Writ
             else
                 doc.SaveAs(target);
         });
-        return Merge((JsonObject)SolidEdgeBackend.Info(doc, documentId), OutputPaths.Verify(target));
+        return Merge((JsonObject)EdgeOps.Info(doc, documentId), OutputPaths.Verify(target));
     }
 }
 
@@ -38,7 +38,7 @@ public sealed class ExportStep() : SeCommand("export_step", CommandKind.Write,
     "Export .step/.stp, verify a nonempty file, and retain the native part document path.",
     Text("document_id"), Text("path"), Flag("overwrite", false))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var overwrite = c.Args.Flag("overwrite");

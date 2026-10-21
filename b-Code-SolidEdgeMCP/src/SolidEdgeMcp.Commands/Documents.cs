@@ -3,7 +3,7 @@ namespace SolidEdgeMcp.Commands;
 public sealed class ListDocuments() : SeCommand("list_documents", CommandKind.Read,
     "List open documents and their stable IDs for this server connection.")
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var edge = c.Edge;
         var app = edge.RequireApp();
@@ -15,7 +15,7 @@ public sealed class ListDocuments() : SeCommand("list_documents", CommandKind.Re
             object doc = app.Documents.Item(i);
             var key = edge.Register(doc);
             alive.Add(key);
-            result.Add(SolidEdgeBackend.Info(doc, key));
+            result.Add(EdgeOps.Info(doc, key));
         }
         foreach (var key in edge.Documents.Keys.Except(alive).ToList())
             edge.Forget(key);
@@ -27,17 +27,17 @@ public sealed class GetDocument() : SeCommand("get_document", CommandKind.Read,
     "Read document name, path, type, and unsaved-change status.",
     Text("document_id"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
-        return (JsonObject)SolidEdgeBackend.Info(c.Edge.Doc(documentId), documentId);
+        return (JsonObject)EdgeOps.Info(c.Edge.Doc(documentId), documentId);
     }
 }
 
 public sealed class NewPart() : SeCommand("new_part", CommandKind.Create,
     "Create a new empty ordered part using Solid Edge's default part template.")
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         object doc = c.Edge.RequireApp().Documents.Add("SolidEdge.PartDocument");
         var documentId = c.Edge.Register(doc);
@@ -49,7 +49,7 @@ public sealed class NewPart() : SeCommand("new_part", CommandKind.Create,
         {
             throw new EdgeError($"Part {documentId} was created, but ordered mode failed: {exc.Message}");
         }
-        return (JsonObject)SolidEdgeBackend.Info(doc, documentId);
+        return (JsonObject)EdgeOps.Info(doc, documentId);
     }
 }
 
@@ -57,14 +57,14 @@ public sealed class OpenDocument() : SeCommand("open_document", CommandKind.Crea
     "Open an existing .par file. Supply its absolute Windows path.",
     Text("path"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var path = c.Args.Text("path");
         if (!Path.IsPathFullyQualified(path) || !File.Exists(path)
             || !Path.GetExtension(path).Equals(".par", StringComparison.OrdinalIgnoreCase))
             throw new EdgeError("Supply an existing absolute path to a .par file.");
         object doc = c.Edge.RequireApp().Documents.Open(Path.GetFullPath(path));
-        return (JsonObject)SolidEdgeBackend.Info(doc, c.Edge.Register(doc));
+        return (JsonObject)EdgeOps.Info(doc, c.Edge.Register(doc));
     }
 }
 
@@ -72,7 +72,7 @@ public sealed class CloseDocument() : SeCommand("close_document", CommandKind.Wr
     "Close this document. Refuse unsaved changes unless discard_changes is explicitly true.",
     Text("document_id"), Flag("discard_changes", false))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var doc = c.Edge.Doc(documentId);

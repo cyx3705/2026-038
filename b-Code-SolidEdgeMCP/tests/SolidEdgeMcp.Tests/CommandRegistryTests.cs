@@ -1,24 +1,24 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using SolidEdgeMcp.Commands;
 
 namespace SolidEdgeMcp.Tests;
 
 /// <summary>Test-only commands. They live in this assembly, so loading it acts as a second build.</summary>
 public sealed class EchoCommand() : SeCommand("echo", CommandKind.Read, "Return the text argument.", ToolParameter.Text("text"))
 {
-    public override CommandOutput Execute(CommandContext context) => new JsonObject { ["echo"] = context.Args.Text("text") };
+    public override CommandOutput Execute(CommandCall call) => new JsonObject { ["echo"] = call.Args.Text("text") };
 }
 
 public sealed class RelayCommand() : SeCommand("relay", CommandKind.Read, "Call echo as a nested command.")
 {
-    public override CommandOutput Execute(CommandContext context) => context.Run("echo", new JsonObject { ["text"] = "nested" });
+    public override CommandOutput Execute(CommandCall call) => call.Run("echo", new JsonObject { ["text"] = "nested" });
 }
 
 public sealed class DormantCommand() : SeCommand("dormant", CommandKind.Read, "Switched off until enabled.")
 {
     public override bool EnabledByDefault => false;
 
-    public override CommandOutput Execute(CommandContext context) => new JsonObject();
+    public override CommandOutput Execute(CommandCall call) => new JsonObject();
 }
 
 /// <summary>Hot swap, switches and argument rules of the command registry; no Solid Edge involved.</summary>
@@ -51,8 +51,7 @@ public sealed class CommandRegistryTests : IDisposable
 
     private JsonObject Call(CommandRegistry registry, string command, JsonObject? arguments = null)
     {
-        var target = registry.Get(command);
-        return (JsonObject)registry.Execute(_backend, target, CommandRegistry.Arguments(target, CommandContext.Elements(arguments))).Data;
+        return (JsonObject)registry.Execute(_backend, registry.Get(command), arguments ?? []).Data;
     }
 
     [Fact]
@@ -61,7 +60,7 @@ public sealed class CommandRegistryTests : IDisposable
         Install(BuiltCommands());
         var registry = new CommandRegistry(Dll, null);
         var loaded = registry.Load();
-        Assert.Equal(23, (int)loaded["command_count"]!);
+        Assert.Equal(25, (int)loaded["command_count"]!);
         var commands = registry.Describe()["commands"]!.AsArray();
         Assert.All(commands, c => Assert.True((bool)c!["enabled"]!));
         var box = registry.Describe("create_box");

@@ -163,6 +163,47 @@ try
         Check(Close(Volume(await Call("geometry", new() { ["document_id"] = docId })), expected), "plate untouched");
         await Call("close_document", new() { ["document_id"] = cylinderId, ["discard_changes"] = true });
         created.Remove(cylinderId);
+        // Sketch: a slot with a tangent arc end and a hole, read back from CAD, then extruded.
+        var slotId = (string)(await Call("new_part"))["document_id"]!;
+        created.Add(slotId);
+        var entities = JsonNode.Parse("""
+            [
+              {"id": "L1", "type": "line", "start": [0, 0], "end": [80, 0]},
+              {"id": "A1", "type": "arc", "center": [80, 10], "start": [80, 0], "end": [80, 20]},
+              {"id": "L2", "type": "line", "start": [80, 20], "end": [0, 20]},
+              {"id": "L3", "type": "line", "start": [0, 20], "end": [0, 0]},
+              {"id": "H1", "type": "circle", "center": [40, 10], "radius": 4}
+            ]
+            """);
+        var slot = await Call("sketch", new() { ["document_id"] = slotId, ["entities"] = entities });
+        var net = 1600 + Math.PI * 50 - Math.PI * 16;
+        Check(Close((double)slot["net_area_mm2"]!, net), "sketch net area");
+        Check(slot["issues"]!.AsArray().Count == 0 && (double)slot["max_deviation_mm"]! < 1e-6, "sketch read back as described");
+        Check(((string)slot["svg"]!).StartsWith("<svg"), "sketch svg");
+        var listed = await Call("view_sketch", new() { ["document_id"] = slotId });
+        Check(listed["sketches"]!.AsArray().Count == 1, "one sketch listed");
+        var viewed = await Raw("view_sketch", new() { ["document_id"] = slotId, ["sketch_index"] = 1, ["png"] = true });
+        Check(viewed.IsError != true && viewed.Content.OfType<ImageContentBlock>().Any(), "view_sketch png");
+        File.WriteAllBytes(Path.Combine(outputDir, "sketch-slot.png"), viewed.Content.OfType<ImageContentBlock>().First().DecodedData.ToArray());
+        File.WriteAllText(Path.Combine(outputDir, "sketch-slot.svg"), (string)slot["svg"]!);
+        var bowTie = await Raw("sketch", new()
+        {
+            ["document_id"] = slotId,
+            ["entities"] = JsonNode.Parse("""
+                [{"id": "a", "type": "line", "start": [0, 0], "end": [10, 10]},
+                 {"id": "b", "type": "line", "start": [10, 10], "end": [10, 0]},
+                 {"id": "c", "type": "line", "start": [10, 0], "end": [0, 10]},
+                 {"id": "d", "type": "line", "start": [0, 10], "end": [0, 0]}]
+                """),
+        });
+        Check(bowTie.IsError == true, "self-intersecting sketch refused");
+        Check((await Call("view_sketch", new() { ["document_id"] = slotId }))["sketches"]!.AsArray().Count == 1, "refused sketch left nothing");
+        var slotSolid = await Call("extrude", new() { ["document_id"] = slotId, ["profile_id"] = (string)slot["profile_id"]!, ["distance_mm"] = 10 });
+        Check(Close(Volume(slotSolid["geometry"]!), net * 10), "slot volume = net area x depth");
+        var afterExtrude = await Call("view_sketch", new() { ["document_id"] = slotId, ["sketch_index"] = 1 });
+        Check(Close((double)afterExtrude["net_area_mm2"]!, net), "consumed sketch still readable");
+        await Call("close_document", new() { ["document_id"] = slotId, ["discard_changes"] = true });
+        created.Remove(slotId);
         foreach (var orientation in new[] { "Front", "Top", "Right", "Iso" })
             await Call("set_view", new() { ["document_id"] = docId, ["orientation"] = orientation });
         report["unique_commands_exercised"] = new JsonArray(

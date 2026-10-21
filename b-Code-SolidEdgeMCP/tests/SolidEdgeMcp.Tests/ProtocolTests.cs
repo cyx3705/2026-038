@@ -32,7 +32,7 @@ public sealed class ProtocolTests : IDisposable
         Assert.True(tools["se_call"].ProtocolTool.Annotations!.DestructiveHint);
 
         var found = await client.CallToolAsync("se_find");
-        Assert.Equal(23, found.StructuredContent!.Value.GetProperty("commands").GetArrayLength());
+        Assert.Equal(25, found.StructuredContent!.Value.GetProperty("commands").GetArrayLength());
         var box = await client.CallToolAsync("se_find", new Dictionary<string, object?> { ["command"] = "create_box" });
         var width = box.StructuredContent!.Value.GetProperty("input_schema").GetProperty("properties").GetProperty("width_mm");
         Assert.Equal(0, width.GetProperty("exclusiveMinimum").GetDouble());

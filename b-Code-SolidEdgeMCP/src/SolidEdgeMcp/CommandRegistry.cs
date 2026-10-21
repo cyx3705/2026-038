@@ -157,9 +157,8 @@ public sealed partial class CommandRegistry
                     throw new EdgeError($"{type.FullName}: invalid command name '{command.Name}' (lowercase, digits, _).");
                 if (!commands.TryAdd(command.Name, command))
                     throw new EdgeError($"Duplicate command name {command.Name}.");
-                var duplicate = command.Parameters.GroupBy(p => p.Name).FirstOrDefault(g => g.Count() > 1);
-                if (duplicate is not null)
-                    throw new EdgeError($"{command.Name}: duplicate parameter {duplicate.Key}.");
+                // Build every schema once now, so a broken spec fails the load instead of a later call.
+                _ = command.InputSchema.ToJsonString();
             }
             var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                 ?? assembly.GetName().Version?.ToString() ?? "";
@@ -218,7 +217,7 @@ public sealed partial class CommandRegistry
             {
                 var command = Find(name, requireEnabled: false);
                 var detail = Summary(command);
-                detail["input_schema"] = JsonNode.Parse(ToolParameter.ObjectSchema(command.Parameters).GetRawText());
+                detail["input_schema"] = command.InputSchema.DeepClone();
                 return detail;
             }
             var result = new JsonObject
@@ -251,17 +250,11 @@ public sealed partial class CommandRegistry
         ["description"] = command.Description,
     };
 
-    /// <summary>Validate call arguments against the command's parameters; unknown names are rejected.</summary>
-    public static ToolArguments Arguments(ISeCommand command, IReadOnlyDictionary<string, JsonElement>? arguments)
-    {
-        var unknown = arguments?.Keys.Except(command.Parameters.Select(p => p.Name)).FirstOrDefault();
-        if (unknown is not null)
-            throw new EdgeError($"Unknown argument {unknown} for {command.Name}. Call se_find with command={command.Name}.");
-        return new ToolArguments(command.Parameters.ToDictionary(p => p.Name, p => p.Read(arguments)));
-    }
-
-    /// <summary>Run a command on the current (STA) thread. Nested calls from commands come back here.</summary>
-    public CommandOutput Execute(SolidEdgeBackend edge, ISeCommand command, ToolArguments arguments)
+    /// <summary>
+    /// Run a command on the current (STA) thread; the command validates its own arguments.
+    /// Nested calls from commands come back here.
+    /// </summary>
+    public CommandOutput Execute(SolidEdgeBackend edge, ISeCommand command, JsonObject arguments)
     {
         if (t_depth >= MaxDepth)
             throw new EdgeError($"Commands nested deeper than {MaxDepth} levels.");
@@ -269,10 +262,7 @@ public sealed partial class CommandRegistry
         try
         {
             return command.Execute(new CommandContext(edge, arguments, (name, nested) =>
-            {
-                var target = Get(name);
-                return Execute(edge, target, Arguments(target, CommandContext.Elements(nested)));
-            }));
+                Execute(edge, Get(name), (JsonObject?)nested?.DeepClone() ?? [])));
         }
         finally
         {

@@ -1,12 +1,12 @@
 # 验证记录
 
-日期：2026-10-21（Asia/Shanghai），0.3.0（固定 4 个 MCP 工具 + 可热换的内部指令程序集）实测。0.2.0（C# 首版）与 Python 版（0.1.0，2026-10-11）的同一组检查数值与本次逐项一致。
+日期：2026-10-21（Asia/Shanghai），0.4.0（0.3.0 的固定 4 工具 + 可热换指令，新增 `sketch`/`view_sketch`，外壳契约收为 Schema + 原始 JSON 参数）实测。0.2.0（C# 首版）与 Python 版（0.1.0，2026-10-11）的同一组检查数值与本次逐项一致。
 
 环境：Windows x64，Solid Edge 2020 `220.00.00.104`，.NET `8.0.31`，MCP C# SDK `ModelContextProtocol.Core 1.4.0`。依赖版本写在各 `.csproj`。
 
 ## 实机结果
 
-使用 `scripts/LiveSmoke` 启动真实 stdio MCP 进程，通过官方 `McpClient` 调用，未用模拟 CAD 后端。客户端看到 4 个工具；全部 23 条内部指令经 `se_call` 至少成功调用一次，其中 `disconnect` 在清理阶段验证，其余 22 条保留在逐步 JSON 记录中。
+使用 `scripts/LiveSmoke` 启动真实 stdio MCP 进程，通过官方 `McpClient` 调用，未用模拟 CAD 后端。客户端看到 4 个工具；全部 25 条内部指令经 `se_call` 至少成功调用一次，其中 `disconnect` 在清理阶段验证，其余 24 条保留在逐步 JSON 记录中。
 
 | 检查 | 预期 | 实测 |
 | --- | --- | --- |
@@ -23,13 +23,17 @@
 | 视图 | Iso / Front / Top / Right | 全部调用通过 |
 | 预览 | PNG，MCP 返回 image 类型内容 | 已生成并目视检查 |
 | 指令开关 | 文档打开时关掉 `geometry` 后调用被拒，再打开恢复 | 通过 |
+| 草图读回 | 80×20 长圆形（半圆端）+ φ8 孔 | 读回偏差 0，净面积 1706.81415 mm²（= 1600 + 50π − 16π） |
+| 草图拉伸 | 同一草图拉伸 10 mm | 体积 17068.141502 mm³ = 净面积 × 10，孔随整组轮廓拉伸 |
+| 草图拒绝 | 自交（蝴蝶结）描述 | 返回错误，零件中不留草图 |
+| 草图查看 | 拉伸后按序号 `view_sketch`，`png=true` | 结构与 SVG 一致，PNG 目视正确 |
 | 程序集热换 | `se_unload` 卸载整个指令程序集后 `se_load` 重新载入 | 23 条指令恢复，原文档 ID 查得体积一致 |
 
 实体体积断言采用相对误差 `1e-7`，避免浮点舍入误差。原生零件和 STEP 均在 `examples/demo/`；STEP 本次验证了成功导出与文件标头，未用第二款 CAD 软件做独立导入验证。
 
 ## 自动化结果
 
-`dotnet build`（告警即错误）零告警，`dotnet test`：21 项通过，其中包括：被替换的指令程序集所在加载上下文能被 GC 回收；载入中的 DLL 文件可被覆盖（不锁文件）。`scripts/setup.ps1 -Dev`（发布外壳到 `obj/app`、构建指令到 `obj/commands`、生成客户端配置）和 `--doctor` 已运行成功。项目合同 `-Instantiation`：PASS。
+`dotnet build`（告警即错误）零告警，`dotnet test`：26 项通过，其中包括：被替换的指令程序集所在加载上下文能被 GC 回收；载入中的 DLL 文件可被覆盖（不锁文件）。`scripts/setup.ps1 -Dev`（发布外壳到 `obj/app`、构建指令到 `obj/commands`、生成客户端配置）和 `--doctor` 已运行成功。项目合同 `-Instantiation`：PASS。
 
 ## 2020 版适配事实
 
@@ -39,6 +43,8 @@
    - `Body.GetRange` 的两个 `SAFEARRAY(double)*` 以 `ref Array`（`double[3]`）传入并原地回填。
    - `ApplyDirection1Extent` 的 `KeyPointFlags` 声明为 `KeyPointExtentConstants*`，`dynamic` 绑定器无法转换该签名；改用 `Type.InvokeMember` 直接走 IDispatch，第 5 参按引用、关键点传 `DispatchWrapper(null)`。
 3. `SaveAsImage("*.png")` 在本机生成的是追加 `.tif` 的文件。服务改用临时 BMP，随后转换 PNG，并验证生成文件。
-4. 新建拉伸特征的深度未自动出现于本机变量查询；因此提供基于 `ApplyDirection1Extent` 的 `se_set_extrusion_depth`。
+4. 新建拉伸特征的深度未自动出现于本机变量查询；因此提供基于 `ApplyDirection1Extent` 的 `set_extrusion_depth`。
+5. `Profile.End(igProfileClosed | igProfileNoSelfIntersect | igProfileAllowNested)` 会把嵌套的闭环（孔）拆到同一 `ProfileSet` 的独立 `Profile` 中；读回要遍历整组，拉伸要把整组轮廓一起传入，否则孔被漏掉。
+6. 草图元素签名（`fwksupp.tlb`）：圆弧关键点 `igArcStart=1`、`igArcEnd=2`（直线 0/1）；`GetStartPoint/GetEndPoint/GetCenterPoint` 以 `out double` 读回可用；`Name` 属性可直接读取（如 `Line2d 318`）。圆弧用 `AddByStartAlongEnd` 三点创建，避免依赖方向约定。
 
 未验证：其他 Solid Edge 版本、非默认模板下的所有坐标方向、所有错误/模态窗口情形、所有用户变量单位和公式组合。COM 无事务回滚；客户端应在写入错误后检查真实文档状态。

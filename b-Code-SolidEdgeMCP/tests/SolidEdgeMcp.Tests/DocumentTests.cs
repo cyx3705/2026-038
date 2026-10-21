@@ -25,8 +25,7 @@ public sealed class DocumentTests
     }
 
     private CommandOutput Run(ISeCommand command, JsonObject arguments) =>
-        command.Execute(new CommandContext(_backend,
-            CommandRegistry.Arguments(command, CommandContext.Elements(arguments)),
+        command.Execute(new CommandContext(_backend, arguments,
             (name, _) => throw new InvalidOperationException($"unexpected nested call to {name}")));
 
     [Fact]

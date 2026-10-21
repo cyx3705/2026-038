@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>SolidEdgeMcp.Commands</AssemblyName>
     <RootNamespace>SolidEdgeMcp.Commands</RootNamespace>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <InvariantGlobalization>true</InvariantGlobalization>
     <OutDir>$(MSBuildThisFileDirectory)..\..\obj\commands\</OutDir>
     <GenerateDependencyFile>false</GenerateDependencyFile>
@@ -25,8 +25,8 @@
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="SolidEdgeMcp" />
     <Using Include="SolidEdgeMcp.ComInterop" Static="true" />
-    <Using Include="SolidEdgeMcp.CommandKit" Static="true" />
-    <Using Include="SolidEdgeMcp.ToolParameter" Static="true" />
+    <Using Include="SolidEdgeMcp.Commands.CommandKit" Static="true" />
+    <Using Include="SolidEdgeMcp.Commands.ToolParameter" Static="true" />
   </ItemGroup>
 
 </Project>

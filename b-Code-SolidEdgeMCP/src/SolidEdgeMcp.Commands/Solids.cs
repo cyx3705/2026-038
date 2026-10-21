@@ -5,7 +5,7 @@ public sealed class Extrude() : SeCommand("extrude", CommandKind.Write,
     Text("document_id"), Text("profile_id"), Length("distance_mm"), Choice("operation", "add", "add", "cut"),
     Choice("direction", "normal", "normal", "reverse"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var a = c.Args;
         var edge = c.Edge;
@@ -24,21 +24,27 @@ public sealed class Extrude() : SeCommand("extrude", CommandKind.Write,
         if (operation == "cut" && models == 0)
             throw new EdgeError("Create a base solid before cutting.");
         dynamic profile = entry.Profile;
+        // Profile.End() puts nested loops (holes) into sibling profiles of the same set; extrude them together.
+        var set = profile.Parent;
+        int profileCount = Int(set.Profiles.Count);
+        var members = new DispatchWrapper[profileCount];
+        for (var i = 0; i < profileCount; i++)
+            members[i] = new DispatchWrapper((object)set.Profiles.Item(i + 1));
         doc.Activate();
         var geometry = new JsonObject { ["document_id"] = documentId };
         var before = (double)c.Run("geometry", geometry)["total_volume_mm3"]!;
         var side = a.Text("direction") == "normal" ? 2 : 1;
         // Part.tlb declares ProfileArray as SAFEARRAY(IDispatch*)*; DispatchWrapper[] marshals as exactly that.
-        Array profiles = new DispatchWrapper[] { new((object)profile) };
+        Array profiles = members;
         if (models == 0)
         {
-            doc.Models.AddFiniteExtrudedProtrusion(1, ref profiles, side, distanceMm / 1000);
+            doc.Models.AddFiniteExtrudedProtrusion(profileCount, ref profiles, side, distanceMm / 1000);
         }
         else
         {
             var model = doc.Models.Item(1);
             var collection = operation == "add" ? model.ExtrudedProtrusions : model.ExtrudedCutouts;
-            collection.AddFiniteMulti(1, ref profiles, side, distanceMm / 1000);
+            collection.AddFiniteMulti(profileCount, ref profiles, side, distanceMm / 1000);
         }
         // A returned COM call can still have created an invalid/empty feature.
         edge.Profiles.Remove(profileId);
@@ -49,7 +55,8 @@ public sealed class Extrude() : SeCommand("extrude", CommandKind.Write,
             throw new EdgeError(
                 "Extrusion call completed but the expected volume change was not verified. "
                 + "Inspect the part and feature tree; the call may have left an invalid feature.");
-        profile.Visible = false;
+        for (var i = 1; i <= profileCount; i++)
+            set.Profiles.Item(i).Visible = false;
         return new JsonObject { ["document_id"] = documentId, ["operation"] = operation, ["geometry"] = after };
     }
 }
@@ -58,7 +65,7 @@ public sealed class CreateBox() : SeCommand("create_box", CommandKind.Create,
     "Create a box in an EMPTY part; width/depth follow plane axes, height its normal.",
     Text("document_id"), Length("width_mm"), Length("depth_mm"), Length("height_mm"), Index("plane_index"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var a = c.Args;
         var documentId = a.Text("document_id");
@@ -84,7 +91,7 @@ public sealed class CreateCylinder() : SeCommand("create_cylinder", CommandKind.
     "Create a cylinder in an EMPTY part, centered at the plane origin.",
     Text("document_id"), Length("radius_mm"), Length("height_mm"), Index("plane_index"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var a = c.Args;
         var documentId = a.Text("document_id");

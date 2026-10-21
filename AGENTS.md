@@ -38,5 +38,5 @@
 - 本仓为 2026-038-SolidEdgeMCP，独立 MCP 服务，不是 OneHistory 宿主模块。
 - 业务源码在 b-Code-SolidEdgeMCP，维护工具在 b-Code。
 - C# 解决方案为组件内 SolidEdgeMcp.sln；外壳发布在组件的 obj/app，内部指令构建到 obj/commands（运行中 se_load 热换）；config、data 为不入库的本机生成目录。
-- 新增或修改 CAD 操作写在 src/SolidEdgeMcp.Commands；只有内核状态、MCP 处理或指令契约变化才动外壳 src/SolidEdgeMcp。
+- 新增或修改 CAD 操作、参数规格和内核操作都写在 src/SolidEdgeMcp.Commands（含 Kit/）；只有共享状态、MCP 处理或最小契约（Commands.cs）变化才动外壳 src/SolidEdgeMcp，改外壳要重新发布并重连。
 - 项目合同始终以 -Instantiation 严格模式验收。

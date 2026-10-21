@@ -4,7 +4,7 @@ public sealed class Geometry() : SeCommand("geometry", CommandKind.Read,
     "Measure solid volume (mm^3), face count, and world-coordinate bounding box (mm).",
     Text("document_id"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var doc = c.Edge.Doc(c.Args.Text("document_id"), part: true);
         var models = new JsonArray();
@@ -40,7 +40,7 @@ public sealed class Features() : SeCommand("features", CommandKind.Read,
     "List ordered features, model indices, and Solid Edge feature status codes.",
     Text("document_id"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var doc = c.Edge.Doc(c.Args.Text("document_id"), part: true);
         var result = new JsonArray();
@@ -69,7 +69,7 @@ public sealed class SetExtrusionDepth() : SeCommand("set_extrusion_depth", Comma
     "Change a finite extrusion/cutout depth by feature name; read back depth and geometry.",
     Text("document_id"), Text("feature_name"), Length("depth_mm"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var featureName = c.Args.Text("feature_name");
@@ -123,7 +123,7 @@ public sealed class ListVariables() : SeCommand("list_variables", CommandKind.Re
     "List numeric variables/dimensions, exact names, formulas, values, and units.",
     Text("document_id"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var variables = c.Edge.Doc(c.Args.Text("document_id"), part: true).Variables;
         var found = new Dictionary<string, JsonObject>();
@@ -150,7 +150,7 @@ public sealed class SetVariable() : SeCommand("set_variable", CommandKind.Write,
     "Set an existing variable and read it back; unit must match list_variables exactly.",
     Text("document_id"), Text("name"), Finite("value"), Choice("unit", "mm", "deg", "raw"))
 {
-    public override CommandOutput Execute(CommandContext c)
+    public override CommandOutput Execute(CommandCall c)
     {
         var documentId = c.Args.Text("document_id");
         var name = c.Args.Text("name");
