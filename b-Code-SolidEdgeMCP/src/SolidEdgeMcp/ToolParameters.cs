@@ -38,6 +38,8 @@ public sealed record ToolParameter(
 
     public static ToolParameter Flag(string name, bool fallback) => new(name, "boolean", false, fallback);
 
+    public static ToolParameter OptionalObject(string name) => new(name, "object", false, null, Nullable: true);
+
     public static ToolParameter Choice(string name, params string[] choices) => new(name, "string", Choices: choices);
 
     public static ToolParameter Choice(string name, string fallback, params string[] choices) =>
@@ -100,6 +102,7 @@ public sealed record ToolParameter(
             "boolean" when value.ValueKind is JsonValueKind.True or JsonValueKind.False => value.GetBoolean(),
             "number" when value.ValueKind == JsonValueKind.Number => value.GetDouble(),
             "integer" when value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var whole) => whole,
+            "object" when value.ValueKind == JsonValueKind.Object => value.Clone(),
             _ => throw new EdgeError($"Invalid argument {Name}: expected {Type}."),
         };
         if (Choices is not null && !Choices.Contains((string)result))
@@ -132,4 +135,6 @@ public sealed class ToolArguments(IReadOnlyDictionary<string, object?> values)
     public int Integer(string name) => (int)values[name]!;
 
     public bool Flag(string name) => (bool)values[name]!;
+
+    public JsonElement? OptionalObject(string name) => (JsonElement?)values[name];
 }

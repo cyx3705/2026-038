@@ -7,6 +7,10 @@ $serverExe = Join-Path $appRoot 'SolidEdgeMcp.exe'
 # Framework-dependent publish into obj\app; the generated client configs point at this exe.
 & dotnet publish (Join-Path $projectRoot 'src\SolidEdgeMcp') -c Release -o $appRoot --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Server publish failed. Close MCP clients that hold obj\app\SolidEdgeMcp.exe, then retry.' }
+# Commands are a separate assembly the running server hot-swaps on se_load; rebuilding them
+# never requires stopping the server. Output goes to obj\commands, the server's default.
+& dotnet build (Join-Path $projectRoot 'src\SolidEdgeMcp.Commands') -c Release --nologo
+if ($LASTEXITCODE -ne 0) { throw 'Commands build failed.' }
 if ($Dev) {
     & dotnet build (Join-Path $projectRoot 'SolidEdgeMcp.sln') --nologo
     if ($LASTEXITCODE -ne 0) { throw 'Solution build failed.' }

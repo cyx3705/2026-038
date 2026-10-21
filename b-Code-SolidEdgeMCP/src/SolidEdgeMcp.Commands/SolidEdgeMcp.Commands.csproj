@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Internal commands. Never referenced by the shell: it reads the built DLL at runtime and
+       hot-swaps it on se_load. Build output goes to a fixed place the shell finds by default. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SolidEdgeMcp.Commands</AssemblyName>
+    <RootNamespace>SolidEdgeMcp.Commands</RootNamespace>
+    <Version>0.3.0</Version>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <OutDir>$(MSBuildThisFileDirectory)..\..\obj\commands\</OutDir>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Compile against the shell, but never copy it: at runtime the shell's own copy is used. -->
+    <ProjectReference Include="..\SolidEdgeMcp\SolidEdgeMcp.csproj" Private="false" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Text.Json.Nodes" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="SolidEdgeMcp" />
+    <Using Include="SolidEdgeMcp.ComInterop" Static="true" />
+    <Using Include="SolidEdgeMcp.CommandKit" Static="true" />
+    <Using Include="SolidEdgeMcp.ToolParameter" Static="true" />
+  </ItemGroup>
+
+</Project>

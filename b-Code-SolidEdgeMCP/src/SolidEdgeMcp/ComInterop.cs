@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace SolidEdgeMcp;
 
 /// <summary>COM helpers .NET 8 no longer ships (GetActiveObject) plus late-bound value conversion.</summary>
-internal static class ComInterop
+public static class ComInterop
 {
     public const int MkEUnavailable = unchecked((int)0x800401E3);
 

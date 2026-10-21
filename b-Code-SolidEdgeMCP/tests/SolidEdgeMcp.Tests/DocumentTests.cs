@@ -1,4 +1,6 @@
 using System.Dynamic;
+using System.Text.Json.Nodes;
+using SolidEdgeMcp.Commands;
 
 namespace SolidEdgeMcp.Tests;
 
@@ -21,6 +23,11 @@ public sealed class DocumentTests
         app.Documents = Collection(documents);
         return app;
     }
+
+    private CommandOutput Run(ISeCommand command, JsonObject arguments) =>
+        command.Execute(new CommandContext(_backend,
+            CommandRegistry.Arguments(command, CommandContext.Elements(arguments)),
+            (name, _) => throw new InvalidOperationException($"unexpected nested call to {name}")));
 
     [Fact]
     public void ClosedDocumentIdNeverTargetsAnotherActiveDocument()
@@ -45,7 +52,7 @@ public sealed class DocumentTests
         doc.Close = (Action<bool>)(_ => closed = true);
         _backend.App = App(doc);
         _backend.Documents["part"] = doc;
-        var error = Assert.Throws<EdgeError>(() => _backend.CloseDocument("part"));
+        var error = Assert.Throws<EdgeError>(() => Run(new CloseDocument(), new JsonObject { ["document_id"] = "part" }));
         Assert.Contains("unsaved changes", error.Message);
         Assert.False(closed);
     }
@@ -72,7 +79,12 @@ public sealed class DocumentTests
         _backend.App = App(doc);
         _backend.Documents["part"] = doc;
         _backend.Profiles["sketch"] = ("different-part", new object());
-        var error = Assert.Throws<EdgeError>(() => _backend.Extrude("part", "sketch", 10));
+        var error = Assert.Throws<EdgeError>(() => Run(new Extrude(), new JsonObject
+        {
+            ["document_id"] = "part",
+            ["profile_id"] = "sketch",
+            ["distance_mm"] = 10,
+        }));
         Assert.Contains("different document", error.Message);
     }
 }

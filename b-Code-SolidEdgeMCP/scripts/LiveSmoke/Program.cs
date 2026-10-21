@@ -43,24 +43,30 @@ try
     {
         Name = "solid-edge",
         Command = Path.Combine(AppContext.BaseDirectory, "SolidEdgeMcp.exe"),
-        Arguments = ["--output-dir", outputDir],
+        // Switches go to the run directory so the smoke never edits the user's config/commands.json.
+        Arguments = ["--output-dir", outputDir, "--switches", Path.Combine(outputDir, "switches.json")],
     });
     await using var session = await McpClient.CreateAsync(transport);
     report["tool_count"] = (await session.ListToolsAsync()).Count;
+    report["command_count"] = (await session.CallToolAsync("se_find")).StructuredContent!.Value.GetProperty("commands").GetArrayLength();
+
+    // Every CAD operation goes through the fixed se_call tool.
+    ValueTask<CallToolResult> Raw(string command, Dictionary<string, object?>? arguments = null) =>
+        session.CallToolAsync("se_call", new Dictionary<string, object?> { ["command"] = command, ["arguments"] = arguments ?? [] });
 
     async Task<JsonNode> Call(string tool, Dictionary<string, object?>? arguments = null)
     {
         arguments ??= [];
-        var result = await session.CallToolAsync(tool, arguments);
+        var result = await Raw(tool, arguments);
         if (result.IsError == true)
             throw new InvalidOperationException($"{tool}: {string.Join(" ", result.Content.OfType<TextContentBlock>().Select(c => c.Text))}");
         JsonNode data = result.StructuredContent is { } structured
             ? JsonNode.Parse(structured.GetRawText())!
             : new JsonObject { ["content_types"] = new JsonArray(result.Content.Select(c => (JsonNode)c.Type).ToArray()) };
-        Console.WriteLine(new JsonObject { ["tool"] = tool, ["result"] = data.DeepClone() }.ToJsonString(compact));
+        Console.WriteLine(new JsonObject { ["command"] = tool, ["result"] = data.DeepClone() }.ToJsonString(compact));
         steps.Add(new JsonObject
         {
-            ["tool"] = tool,
+            ["command"] = tool,
             ["arguments"] = JsonSerializer.SerializeToNode(arguments),
             ["result"] = data,
         });
@@ -71,79 +77,96 @@ try
 
     try
     {
-        await Call("se_status");
-        report["connection"] = (await Call("se_connect")).DeepClone();
-        var docId = (string)(await Call("se_new_part"))["document_id"]!;
+        await Call("status");
+        report["connection"] = (await Call("connect")).DeepClone();
+        var docId = (string)(await Call("new_part"))["document_id"]!;
         created.Add(docId);
-        await Call("se_reference_planes", new() { ["document_id"] = docId });
-        await Call("se_create_box", new() { ["document_id"] = docId, ["width_mm"] = 100, ["depth_mm"] = 60, ["height_mm"] = 20 });
-        var geometry = await Call("se_geometry", new() { ["document_id"] = docId });
+        await Call("reference_planes", new() { ["document_id"] = docId });
+        await Call("create_box", new() { ["document_id"] = docId, ["width_mm"] = 100, ["depth_mm"] = 60, ["height_mm"] = 20 });
+        var geometry = await Call("geometry", new() { ["document_id"] = docId });
         Check(Close(Volume(geometry), 120000), "box volume");
         var size = geometry["models"]![0]!["size_mm"]!.AsArray().Select(v => Math.Round((double)v!, 6)).Order().ToArray();
         Check(size.SequenceEqual([20.0, 60.0, 100.0]), "box size");
-        var variables = await Call("se_list_variables", new() { ["document_id"] = docId });
+        var variables = await Call("list_variables", new() { ["document_id"] = docId });
         var accuracy = variables["variables"]!.AsArray().First(v => (string)v!["name"]! == "PhysicalProperties_Accuracy")!;
-        await Call("se_set_variable", new()
+        await Call("set_variable", new()
         {
             ["document_id"] = docId, ["name"] = (string)accuracy["name"]!, ["value"] = 0.98, ["unit"] = "raw",
         });
-        var features = await Call("se_features", new() { ["document_id"] = docId });
-        await Call("se_set_extrusion_depth", new()
+        var features = await Call("features", new() { ["document_id"] = docId });
+        await Call("set_extrusion_depth", new()
         {
             ["document_id"] = docId, ["feature_name"] = (string)features["features"]![0]!["name"]!, ["depth_mm"] = 25,
         });
-        geometry = await Call("se_geometry", new() { ["document_id"] = docId });
+        geometry = await Call("geometry", new() { ["document_id"] = docId });
         Check(Close(Volume(geometry), 150000), "volume after depth change");
-        var circle = await Call("se_create_circle", new() { ["document_id"] = docId, ["radius_mm"] = 6, ["x_mm"] = 50, ["y_mm"] = 30 });
-        await Call("se_extrude", new()
+        var circle = await Call("create_circle", new() { ["document_id"] = docId, ["radius_mm"] = 6, ["x_mm"] = 50, ["y_mm"] = 30 });
+        await Call("extrude", new()
         {
             ["document_id"] = docId, ["profile_id"] = (string)circle["profile_id"]!, ["distance_mm"] = 25, ["operation"] = "cut",
         });
-        geometry = await Call("se_geometry", new() { ["document_id"] = docId });
+        geometry = await Call("geometry", new() { ["document_id"] = docId });
         var expected = 150000 - Math.PI * 6 * 6 * 25;
         Check(Close(Volume(geometry), expected), "volume after cut");
-        await Call("se_features", new() { ["document_id"] = docId });
-        await Call("se_set_view", new() { ["document_id"] = docId });
-        await Call("se_capture_viewport", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.png" });
-        await Call("se_save_document", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.par" });
-        await Call("se_export_step", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.step" });
+        // Hot swap with CAD state live: switch one command off and on, then unload and reload the
+        // whole commands assembly. Document IDs belong to the shell and must survive.
+        async Task<JsonElement> Shell(string tool, string? command = null)
+        {
+            var result = await session.CallToolAsync(tool, command is null ? null : new Dictionary<string, object?> { ["command"] = command });
+            if (result.IsError == true)
+                throw new InvalidOperationException($"{tool}: {string.Join(" ", result.Content.OfType<TextContentBlock>().Select(c => c.Text))}");
+            steps.Add(new JsonObject { ["shell"] = tool, ["command"] = command, ["result"] = JsonNode.Parse(result.StructuredContent!.Value.GetRawText()) });
+            return result.StructuredContent!.Value;
+        }
+        await Shell("se_unload", "geometry");
+        Check((await Raw("geometry", new() { ["document_id"] = docId })).IsError == true, "switched-off command refused");
+        await Shell("se_load", "geometry");
+        await Shell("se_unload");
+        var reloaded = await Shell("se_load");
+        Check(reloaded.GetProperty("command_count").GetInt32() == (int)report["command_count"]!, "reloaded command set");
+        Check(Close(Volume(await Call("geometry", new() { ["document_id"] = docId })), expected), "document survives reload");
+        await Call("features", new() { ["document_id"] = docId });
+        await Call("set_view", new() { ["document_id"] = docId });
+        await Call("capture_viewport", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.png" });
+        await Call("save_document", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.par" });
+        await Call("export_step", new() { ["document_id"] = docId, ["path"] = "plate-with-hole.step" });
         var header = File.ReadAllBytes(Path.Combine(outputDir, "plate-with-hole.step")).Take(13).ToArray();
         Check(header.SequenceEqual("ISO-10303-21;"u8.ToArray()), "STEP header");
         // Overwrite guards and document reopening exercise persistence through MCP.
-        var duplicate = await session.CallToolAsync("se_export_step", new Dictionary<string, object?>
+        var duplicate = await Raw("export_step", new Dictionary<string, object?>
         {
             ["document_id"] = docId, ["path"] = "plate-with-hole.step",
         });
         Check(duplicate.IsError == true, "overwrite guard");
-        await Call("se_close_document", new() { ["document_id"] = docId });
+        await Call("close_document", new() { ["document_id"] = docId });
         created.Remove(docId);
-        var reopened = await Call("se_open_document", new() { ["path"] = Path.Combine(outputDir, "plate-with-hole.par") });
+        var reopened = await Call("open_document", new() { ["path"] = Path.Combine(outputDir, "plate-with-hole.par") });
         docId = (string)reopened["document_id"]!;
         created.Add(docId);
-        await Call("se_get_document", new() { ["document_id"] = docId });
-        var listing = await Call("se_list_documents");
+        await Call("get_document", new() { ["document_id"] = docId });
+        var listing = await Call("list_documents");
         Check(listing["documents"]!.AsArray().Any(d => (string)d!["document_id"]! == docId), "reopened document listed");
-        Check(Close(Volume(await Call("se_geometry", new() { ["document_id"] = docId })), expected), "reopened volume");
+        Check(Close(Volume(await Call("geometry", new() { ["document_id"] = docId })), expected), "reopened volume");
         // A second part exercises IDs while another document is active.
-        var cylinderId = (string)(await Call("se_new_part"))["document_id"]!;
+        var cylinderId = (string)(await Call("new_part"))["document_id"]!;
         created.Add(cylinderId);
-        await Call("se_create_cylinder", new() { ["document_id"] = cylinderId, ["radius_mm"] = 10, ["height_mm"] = 30 });
+        await Call("create_cylinder", new() { ["document_id"] = cylinderId, ["radius_mm"] = 10, ["height_mm"] = 30 });
         var cylinder = Math.PI * 100 * 30;
-        Check(Close(Volume(await Call("se_geometry", new() { ["document_id"] = cylinderId })), cylinder), "cylinder volume");
-        var rectangle = await Call("se_create_rectangle", new() { ["document_id"] = cylinderId, ["width_mm"] = 5, ["height_mm"] = 5 });
+        Check(Close(Volume(await Call("geometry", new() { ["document_id"] = cylinderId })), cylinder), "cylinder volume");
+        var rectangle = await Call("create_rectangle", new() { ["document_id"] = cylinderId, ["width_mm"] = 5, ["height_mm"] = 5 });
         Check((bool)rectangle["validation_passed"]!, "rectangle closed");
-        var added = await Call("se_extrude", new()
+        var added = await Call("extrude", new()
         {
             ["document_id"] = cylinderId, ["profile_id"] = (string)rectangle["profile_id"]!, ["distance_mm"] = 40,
         });
         Check(Close(Volume(added["geometry"]!), cylinder + 250), "cylinder plus rectangle volume");
-        Check(Close(Volume(await Call("se_geometry", new() { ["document_id"] = docId })), expected), "plate untouched");
-        await Call("se_close_document", new() { ["document_id"] = cylinderId, ["discard_changes"] = true });
+        Check(Close(Volume(await Call("geometry", new() { ["document_id"] = docId })), expected), "plate untouched");
+        await Call("close_document", new() { ["document_id"] = cylinderId, ["discard_changes"] = true });
         created.Remove(cylinderId);
         foreach (var orientation in new[] { "Front", "Top", "Right", "Iso" })
-            await Call("se_set_view", new() { ["document_id"] = docId, ["orientation"] = orientation });
-        report["unique_tools_exercised"] = new JsonArray(
-            steps.Select(s => (string)s!["tool"]!).Distinct().Order().Select(t => (JsonNode)t).ToArray());
+            await Call("set_view", new() { ["document_id"] = docId, ["orientation"] = orientation });
+        report["unique_commands_exercised"] = new JsonArray(
+            steps.Where(s => s!["shell"] is null).Select(s => (string)s!["command"]!).Distinct().Order().Select(t => (JsonNode)t).ToArray());
         report["passed"] = true;
     }
     finally
@@ -152,13 +175,13 @@ try
         {
             foreach (var documentId in created)
             {
-                await session.CallToolAsync("se_close_document", new Dictionary<string, object?>
+                await Raw("close_document", new Dictionary<string, object?>
                 {
                     ["document_id"] = documentId, ["discard_changes"] = true,
                 });
             }
         }
-        var disconnected = await session.CallToolAsync("se_disconnect");
+        var disconnected = await Raw("disconnect");
         Check(disconnected.IsError != true, "disconnect");
     }
 }

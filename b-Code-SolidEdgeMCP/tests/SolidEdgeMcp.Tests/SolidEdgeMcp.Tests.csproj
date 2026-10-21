@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SolidEdgeMcp\SolidEdgeMcp.csproj" />
+    <ProjectReference Include="..\..\src\SolidEdgeMcp.Commands\SolidEdgeMcp.Commands.csproj" />
   </ItemGroup>
 
   <ItemGroup>

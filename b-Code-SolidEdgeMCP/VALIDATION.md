@@ -1,12 +1,12 @@
 # 验证记录
 
-日期：2026-10-21（Asia/Shanghai），C# 重写（0.2.0）后重新实测。Python 版（0.1.0，2026-10-11）的同一组检查数值与本次逐项一致。
+日期：2026-10-21（Asia/Shanghai），0.3.0（固定 4 个 MCP 工具 + 可热换的内部指令程序集）实测。0.2.0（C# 首版）与 Python 版（0.1.0，2026-10-11）的同一组检查数值与本次逐项一致。
 
 环境：Windows x64，Solid Edge 2020 `220.00.00.104`，.NET `8.0.31`，MCP C# SDK `ModelContextProtocol.Core 1.4.0`。依赖版本写在各 `.csproj`。
 
 ## 实机结果
 
-使用 `scripts/LiveSmoke` 启动真实 stdio MCP 进程，通过官方 `McpClient` 调用，未用模拟 CAD 后端。全部 23 个工具至少成功调用一次，其中 `se_disconnect` 在清理阶段验证，其余 22 个工具保留在逐步 JSON 记录中。
+使用 `scripts/LiveSmoke` 启动真实 stdio MCP 进程，通过官方 `McpClient` 调用，未用模拟 CAD 后端。客户端看到 4 个工具；全部 23 条内部指令经 `se_call` 至少成功调用一次，其中 `disconnect` 在清理阶段验证，其余 22 条保留在逐步 JSON 记录中。
 
 | 检查 | 预期 | 实测 |
 | --- | --- | --- |
@@ -22,12 +22,14 @@
 | 覆盖保护 | 未声明覆盖时拒绝第二次导出 | 通过 |
 | 视图 | Iso / Front / Top / Right | 全部调用通过 |
 | 预览 | PNG，MCP 返回 image 类型内容 | 已生成并目视检查 |
+| 指令开关 | 文档打开时关掉 `geometry` 后调用被拒，再打开恢复 | 通过 |
+| 程序集热换 | `se_unload` 卸载整个指令程序集后 `se_load` 重新载入 | 23 条指令恢复，原文档 ID 查得体积一致 |
 
 实体体积断言采用相对误差 `1e-7`，避免浮点舍入误差。原生零件和 STEP 均在 `examples/demo/`；STEP 本次验证了成功导出与文件标头，未用第二款 CAD 软件做独立导入验证。
 
 ## 自动化结果
 
-`dotnet build`（告警即错误）零告警，`dotnet test`：15 项通过。`scripts/setup.ps1`（发布到 `obj/app`、生成客户端配置）和 `--doctor` 已运行成功。
+`dotnet build`（告警即错误）零告警，`dotnet test`：21 项通过，其中包括：被替换的指令程序集所在加载上下文能被 GC 回收；载入中的 DLL 文件可被覆盖（不锁文件）。`scripts/setup.ps1 -Dev`（发布外壳到 `obj/app`、构建指令到 `obj/commands`、生成客户端配置）和 `--doctor` 已运行成功。项目合同 `-Instantiation`：PASS。
 
 ## 2020 版适配事实
 

@@ -15,7 +15,7 @@
       "cad-automation"
     ],
     "status": "active",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "branch": "main"
   },
   "paths": {
@@ -51,6 +51,7 @@
   "commands": {
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code-SolidEdgeMCP\\scripts\\setup.ps1 -Dev",
     "build": "dotnet build .\\b-Code-SolidEdgeMCP\\SolidEdgeMcp.sln",
+    "buildCommands": "dotnet build .\\b-Code-SolidEdgeMCP\\src\\SolidEdgeMcp.Commands",
     "test": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-SolidEdgeMCP.ps1",
     "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code\\Test-ProjectContract.ps1 -Instantiation",
     "run": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\b-Code-SolidEdgeMCP\\scripts\\start.ps1",

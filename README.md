@@ -9,7 +9,7 @@ OneHistory 项目 `2026-038`：通过 C#（.NET 8）MCP 服务控制 Siemens Sol
 - [`b-Office/现行约定.md`](./b-Office/现行约定.md)：本项目长期约定。
 - [`b-Code-SolidEdgeMCP/README.md`](./b-Code-SolidEdgeMCP/README.md)：安装、MCP 接入、工具和实机验证说明。
 
-业务源码集中在 `b-Code-SolidEdgeMCP`。当前支持有序单实体 `.par` 零件：连接、创建草图、拉伸、切除、参数修改、保存、STEP 导出和视图截图。当前实机验证环境是 Solid Edge 2020、.NET 8、Windows x64。
+业务源码集中在 `b-Code-SolidEdgeMCP`。MCP 接口固定为查询、调用、载入、卸载 4 个工具，具体操作是可在运行中热换、逐条开关的内部指令。当前支持有序单实体 `.par` 零件：连接、创建草图、拉伸、切除、参数修改、保存、STEP 导出和视图截图。当前实机验证环境是 Solid Edge 2020、.NET 8、Windows x64。
 
 ## 常用命令
 

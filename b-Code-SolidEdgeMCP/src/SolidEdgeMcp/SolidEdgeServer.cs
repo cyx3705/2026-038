@@ -7,31 +7,39 @@ using static SolidEdgeMcp.ToolParameter;
 
 namespace SolidEdgeMcp;
 
-/// <summary>MCP tools, argument schemas, the guide resource, and their binding to the COM worker.</summary>
+/// <summary>
+/// The fixed MCP surface: four shell tools that find, call, load and unload internal commands.
+/// The tool list never changes at runtime, so clients never need to reconnect for new commands.
+/// </summary>
 public static class SolidEdgeServer
 {
     public const string Name = "solid-edge-mcp";
     public const string GuideUri = "solidedge://guide";
 
     public const string Instructions = """
-        Control Siemens Solid Edge through its Windows COM API.
-        Call se_connect, then se_new_part or se_list_documents. Use the returned document_id
-        for every document operation. IDs expire on disconnect, close, or server restart.
-        All modeling lengths are millimeters; variable angles are degrees. Plane and model
-        indices are 1-based. Query se_reference_planes; sketch coordinates are plane-local.
+        Control Siemens Solid Edge through its Windows COM API via internal commands.
+        se_find lists commands (name, kind, enabled, description); se_find with command=<name>
+        returns that command's input schema. se_call runs a command with an arguments object.
+        se_load with no arguments hot-reloads the commands assembly after a rebuild; with
+        command=<name> it switches that command on. se_unload with command=<name> switches it
+        off; with no arguments it unloads the whole commands assembly.
+        Typical flow: connect, then new_part or list_documents. Use the returned document_id
+        for every document operation. IDs expire on disconnect, close, or server restart; a
+        command reload keeps them. All modeling lengths are millimeters; variable angles are
+        degrees. Plane and model indices are 1-based; sketch coordinates are plane-local.
         This release models ordered, single-body .par parts. The first extrusion creates a
         base solid; later add/cut extrusions modify it. A profile is consumed after extrusion.
-        Verify geometry after changing dimensions and inspect the returned feature status.
-        Writes are confined to SOLIDEDGE_MCP_OUTPUT_DIR. Existing files require overwrite=true.
+        Writes are confined to the output root. Existing files require overwrite=true.
         Errors are MCP isError responses. After a COM error or timeout, inspect the document
         before retrying writes: COM modeling is not transactional and may have changed it.
-        No tool runs arbitrary scripts, shell commands, or undocumented COM member chains.
+        Commands are compiled code from the configured commands assembly; there is no tool
+        for arbitrary scripts, shell commands, or undocumented COM member chains.
 
         """;
 
-    private static readonly ToolAnnotations Read = new() { ReadOnlyHint = true, DestructiveHint = false, OpenWorldHint = false };
+    private static readonly ToolAnnotations ReadOnly = new() { ReadOnlyHint = true, DestructiveHint = false, OpenWorldHint = false };
     private static readonly ToolAnnotations Write = new() { ReadOnlyHint = false, DestructiveHint = true, OpenWorldHint = false };
-    private static readonly ToolAnnotations Create = new() { ReadOnlyHint = false, DestructiveHint = false, OpenWorldHint = false };
+    private static readonly ToolAnnotations Toggle = new() { ReadOnlyHint = false, DestructiveHint = false, OpenWorldHint = false };
 
     private static readonly JsonSerializerOptions Pretty = new()
     {
@@ -46,9 +54,9 @@ public static class SolidEdgeServer
         ToolParameter[] Parameters,
         Func<ToolArguments, Task<CallToolResult>> Handler);
 
-    public static McpServerOptions CreateOptions(ComWorker<SolidEdgeBackend> com)
+    public static McpServerOptions CreateOptions(ComWorker<SolidEdgeBackend> com, CommandRegistry registry)
     {
-        var tools = Tools(com).ToDictionary(t => t.Name);
+        var tools = Tools(com, registry).ToDictionary(t => t.Name);
         var advertised = tools.Values.Select(t => new Tool
         {
             Name = t.Name,
@@ -113,123 +121,43 @@ public static class SolidEdgeServer
         Content = [new TextContentBlock { Text = message }],
     };
 
-    private static CallToolResult Success(JsonNode result) => new()
+    private static CallToolResult Success(JsonNode result, byte[]? png = null)
     {
-        Content = [new TextContentBlock { Text = result.ToJsonString(Pretty) }],
-        StructuredContent = JsonSerializer.SerializeToElement(result),
-    };
+        var text = new TextContentBlock { Text = result.ToJsonString(Pretty) };
+        return new CallToolResult
+        {
+            Content = png is null ? [text] : [ImageContentBlock.FromBytes(png, "image/png"), text],
+            StructuredContent = JsonSerializer.SerializeToElement(result),
+        };
+    }
 
-    private static IEnumerable<ToolSpec> Tools(ComWorker<SolidEdgeBackend> com)
+    private static IEnumerable<ToolSpec> Tools(ComWorker<SolidEdgeBackend> com, CommandRegistry registry)
     {
-        async Task<CallToolResult> Call(Func<SolidEdgeBackend, JsonNode> operation) => Success(await com.CallAsync(operation));
-
-        ToolSpec Tool(string name, string description, ToolAnnotations annotations, ToolParameter[] parameters,
-            Func<ToolArguments, Func<SolidEdgeBackend, JsonNode>> operation) =>
-            new(name, description, annotations, parameters, a => Call(operation(a)));
-
-        var documentId = Text("document_id");
-
-        yield return Tool("se_status",
-            "Get server connection, Solid Edge version, and output directory; never launch CAD.",
-            Read, [], _ => b => b.Status());
-        yield return Tool("se_connect",
-            "Attach to Solid Edge; optionally launch it. Keep CAD visible for interactive work.",
-            Create, [Flag("start_if_needed", true), Flag("visible", true)],
-            a => b => b.Connect(a.Flag("start_if_needed"), a.Flag("visible")));
-        yield return Tool("se_disconnect",
-            "Release COM references and invalidate IDs. Leave Solid Edge and documents open.",
-            Create, [], _ => b => b.Disconnect());
-        yield return Tool("se_list_documents",
-            "List open documents and their stable IDs for this server connection.",
-            Read, [], _ => b => b.ListDocuments());
-        yield return Tool("se_get_document",
-            "Read document name, path, type, and unsaved-change status.",
-            Read, [documentId], a => b => b.GetDocument(a.Text("document_id")));
-        yield return Tool("se_new_part",
-            "Create a new empty ordered part using Solid Edge's default part template.",
-            Create, [], _ => b => b.NewPart());
-        yield return Tool("se_open_document",
-            "Open an existing .par file. Supply its absolute Windows path.",
-            Create, [Text("path")], a => b => b.OpenDocument(a.Text("path")));
-        yield return Tool("se_reference_planes",
-            "List actual reference plane names and 1-based indices in this part.",
-            Read, [documentId], a => b => b.ReferencePlanes(a.Text("document_id")));
-        yield return Tool("se_create_rectangle",
-            "Create a rectangle from its lower-left corner, using local plane coordinates.",
-            Create, [documentId, Length("width_mm"), Length("height_mm"), Coordinate("x_mm"), Coordinate("y_mm"), Index("plane_index")],
-            a => b => b.Rectangle(a.Text("document_id"), a.Number("width_mm"), a.Number("height_mm"),
-                a.Number("x_mm"), a.Number("y_mm"), a.Integer("plane_index")));
-        yield return Tool("se_create_circle",
-            "Create a closed circle profile. x_mm/y_mm specify its center on the local plane.",
-            Create, [documentId, Length("radius_mm"), Coordinate("x_mm"), Coordinate("y_mm"), Index("plane_index")],
-            a => b => b.Circle(a.Text("document_id"), a.Number("radius_mm"), a.Number("x_mm"), a.Number("y_mm"),
-                a.Integer("plane_index")));
-        yield return Tool("se_extrude",
-            "Extrude a closed profile and verify volume change. Consumes the profile on completion.",
-            Write, [documentId, Text("profile_id"), Length("distance_mm"), Choice("operation", "add", "add", "cut"),
-                Choice("direction", "normal", "normal", "reverse")],
-            a => b => b.Extrude(a.Text("document_id"), a.Text("profile_id"), a.Number("distance_mm"),
-                a.Text("operation"), a.Text("direction")));
-        yield return Tool("se_create_box",
-            "Create a box in an EMPTY part; width/depth follow plane axes, height its normal.",
-            Create, [documentId, Length("width_mm"), Length("depth_mm"), Length("height_mm"), Index("plane_index")],
-            a => b => b.Box(a.Text("document_id"), a.Number("width_mm"), a.Number("depth_mm"), a.Number("height_mm"),
-                a.Integer("plane_index")));
-        yield return Tool("se_create_cylinder",
-            "Create a cylinder in an EMPTY part, centered at the plane origin.",
-            Create, [documentId, Length("radius_mm"), Length("height_mm"), Index("plane_index")],
-            a => b => b.Cylinder(a.Text("document_id"), a.Number("radius_mm"), a.Number("height_mm"), a.Integer("plane_index")));
-        yield return Tool("se_geometry",
-            "Measure solid volume (mm^3), face count, and world-coordinate bounding box (mm).",
-            Read, [documentId], a => b => b.Geometry(a.Text("document_id")));
-        yield return Tool("se_features",
-            "List ordered features, model indices, and Solid Edge feature status codes.",
-            Read, [documentId], a => b => b.Features(a.Text("document_id")));
-        yield return Tool("se_list_variables",
-            "List numeric variables/dimensions, exact names, formulas, values, and units.",
-            Read, [documentId], a => b => b.ListVariables(a.Text("document_id")));
-        yield return Tool("se_set_extrusion_depth",
-            "Change a finite extrusion/cutout depth by feature name; read back depth and geometry.",
-            Write, [documentId, Text("feature_name"), Length("depth_mm")],
-            a => b => b.SetExtrusionDepth(a.Text("document_id"), a.Text("feature_name"), a.Number("depth_mm")));
-        yield return Tool("se_set_variable",
-            "Set an existing variable and read it back; unit must match se_list_variables exactly.",
-            Write, [documentId, Text("name"), Finite("value"), Choice("unit", "mm", "deg", "raw")],
-            a => b => b.SetVariable(a.Text("document_id"), a.Text("name"), a.Number("value"), a.Text("unit")));
-        yield return Tool("se_save_document",
-            "Save a native .par inside the output root. Existing files need overwrite=true.",
-            Write, [documentId, OptionalText("path"), Flag("overwrite", false)],
-            a => b => b.SaveDocument(a.Text("document_id"), a.OptionalText("path"), a.Flag("overwrite")));
-        yield return Tool("se_export_step",
-            "Export .step/.stp, verify a nonempty file, and retain the native part document path.",
-            Write, [documentId, Text("path"), Flag("overwrite", false)],
-            a => b => b.ExportStep(a.Text("document_id"), a.Text("path"), a.Flag("overwrite")));
-        yield return Tool("se_set_view",
-            "Activate this part, apply a named view, and fit the geometry in the window.",
-            Create, [documentId, Choice("orientation", "Iso", "Iso", "Front", "Top", "Right")],
-            a => b => b.SetView(a.Text("document_id"), a.Text("orientation")));
-        yield return new ToolSpec("se_capture_viewport",
-            "Save a PNG of this part's current view and return the image to the AI client.",
-            Write,
-            [documentId, new ToolParameter("path", "string", false, "viewport.png"), Integer("width", 1280, 64, 4096),
-                Integer("height", 960, 64, 4096), Flag("overwrite", false)],
+        yield return new ToolSpec("se_find",
+            "List internal commands with kind, on/off switch and description; with command=<name>, return its input schema.",
+            ReadOnly, [OptionalText("command")],
+            a => Task.FromResult(Success(registry.Describe(a.OptionalText("command")))));
+        yield return new ToolSpec("se_call",
+            "Run one enabled internal command. arguments must match the schema from se_find.",
+            Write, [Text("command"), OptionalObject("arguments")],
             async a =>
             {
-                var saved = await com.CallAsync(b => b.CaptureViewport(a.Text("document_id"), a.Text("path"),
-                    a.Integer("width"), a.Integer("height"), a.Flag("overwrite")));
-                var bytes = await File.ReadAllBytesAsync((string)saved["path"]!);
-                return new CallToolResult
-                {
-                    Content =
-                    [
-                        ImageContentBlock.FromBytes(bytes, "image/png"),
-                        new TextContentBlock { Text = saved.ToJsonString(Pretty) },
-                    ],
-                };
+                var command = registry.Get(a.Text("command"));
+                var arguments = a.OptionalObject("arguments") is { } element
+                    ? element.Deserialize<Dictionary<string, JsonElement>>()
+                    : null;
+                var values = CommandRegistry.Arguments(command, arguments);
+                CommandOutput? output = null;
+                var data = await com.CallAsync(b => (output = registry.Execute(b, command, values)).Data);
+                return Success(data, output?.Png);
             });
-        yield return Tool("se_close_document",
-            "Close this document. Refuse unsaved changes unless discard_changes is explicitly true.",
-            Write, [documentId, Flag("discard_changes", false)],
-            a => b => b.CloseDocument(a.Text("document_id"), a.Flag("discard_changes")));
+        yield return new ToolSpec("se_load",
+            "No arguments: hot-reload the commands assembly after a rebuild. command=<name>: switch that command on.",
+            Toggle, [OptionalText("command")],
+            a => Task.FromResult(Success(registry.Load(a.OptionalText("command")))));
+        yield return new ToolSpec("se_unload",
+            "command=<name>: switch that command off. No arguments: unload the whole commands assembly.",
+            Toggle, [OptionalText("command")],
+            a => Task.FromResult(Success(registry.Unload(a.OptionalText("command")))));
     }
 }

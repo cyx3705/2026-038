@@ -2,39 +2,39 @@
   "passed": true,
   "steps": [
     {
-      "tool": "se_status",
+      "command": "status",
       "arguments": {},
       "result": {
         "connected": false,
-        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610"
+        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926"
       }
     },
     {
-      "tool": "se_connect",
+      "command": "connect",
       "arguments": {},
       "result": {
         "connected": true,
-        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610",
+        "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926",
         "version": "220.00.00.104",
         "document_count": 0,
         "started": false
       }
     },
     {
-      "tool": "se_new_part",
+      "command": "new_part",
       "arguments": {},
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
-        "name": "零件4",
-        "full_name": "零件4",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
+        "name": "零件6",
+        "full_name": "零件6",
         "type": 1,
         "dirty": false
       }
     },
     {
-      "tool": "se_reference_planes",
+      "command": "reference_planes",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "planes": [
@@ -55,15 +55,15 @@
       }
     },
     {
-      "tool": "se_create_box",
+      "command": "create_box",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "width_mm": 100,
         "depth_mm": 60,
         "height_mm": 20
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "operation": "add",
         "geometry": {
           "models": [
@@ -94,9 +94,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "models": [
@@ -126,9 +126,9 @@
       }
     },
     {
-      "tool": "se_list_variables",
+      "command": "list_variables",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "variables": [
@@ -152,9 +152,9 @@
       }
     },
     {
-      "tool": "se_set_variable",
+      "command": "set_variable",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "name": "PhysicalProperties_Accuracy",
         "value": 0.98,
         "unit": "raw"
@@ -189,9 +189,9 @@
       }
     },
     {
-      "tool": "se_features",
+      "command": "features",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "features": [
@@ -205,9 +205,9 @@
       }
     },
     {
-      "tool": "se_set_extrusion_depth",
+      "command": "set_extrusion_depth",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "feature_name": "ExtrudedProtrusion_1",
         "depth_mm": 25
       },
@@ -254,9 +254,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "models": [
@@ -286,31 +286,31 @@
       }
     },
     {
-      "tool": "se_create_circle",
+      "command": "create_circle",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "radius_mm": 6,
         "x_mm": 50,
         "y_mm": 30
       },
       "result": {
-        "profile_id": "c8d76afe260c48dba402377916112038",
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "profile_id": "3cd42c258672496983a8a0b8d5d7f7c2",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "validation_code": 0,
         "validation_passed": true,
         "note": "Extrusion verifies that the constructed loop produces the expected solid."
       }
     },
     {
-      "tool": "se_extrude",
+      "command": "extrude",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
-        "profile_id": "c8d76afe260c48dba402377916112038",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
+        "profile_id": "3cd42c258672496983a8a0b8d5d7f7c2",
         "distance_mm": 25,
         "operation": "cut"
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "operation": "cut",
         "geometry": {
           "models": [
@@ -341,9 +341,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "models": [
@@ -373,9 +373,105 @@
       }
     },
     {
-      "tool": "se_features",
+      "shell": "se_unload",
+      "command": "geometry",
+      "result": {
+        "command": "geometry",
+        "enabled": false,
+        "default": true,
+        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\switches.json"
+      }
+    },
+    {
+      "shell": "se_load",
+      "command": "geometry",
+      "result": {
+        "command": "geometry",
+        "enabled": true,
+        "default": true,
+        "persisted_to": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\switches.json"
+      }
+    },
+    {
+      "shell": "se_unload",
+      "command": null,
+      "result": {
+        "assembly": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\obj\\commands\\SolidEdgeMcp.Commands.dll",
+        "unloaded": true
+      }
+    },
+    {
+      "shell": "se_load",
+      "command": null,
+      "result": {
+        "assembly": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\obj\\commands\\SolidEdgeMcp.Commands.dll",
+        "hash": "8df4ce189f77",
+        "version": "0.3.0+b5a0934c2698668907df0ee2ae01df30b9265a6e",
+        "command_count": 23,
+        "added": [
+          "capture_viewport",
+          "close_document",
+          "connect",
+          "create_box",
+          "create_circle",
+          "create_cylinder",
+          "create_rectangle",
+          "disconnect",
+          "export_step",
+          "extrude",
+          "features",
+          "geometry",
+          "get_document",
+          "list_documents",
+          "list_variables",
+          "new_part",
+          "open_document",
+          "reference_planes",
+          "save_document",
+          "set_extrusion_depth",
+          "set_variable",
+          "set_view",
+          "status"
+        ],
+        "removed": []
+      }
+    },
+    {
+      "command": "geometry",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
+      },
+      "result": {
+        "models": [
+          {
+            "model_index": 1,
+            "name": "Design Model",
+            "volume_mm3": 147172.5666117692,
+            "face_count": 7,
+            "min_mm": [
+              0,
+              0,
+              0
+            ],
+            "max_mm": [
+              100,
+              60,
+              25
+            ],
+            "size_mm": [
+              100,
+              60,
+              25
+            ]
+          }
+        ],
+        "total_volume_mm3": 147172.5666117692
+      }
+    },
+    {
+      "command": "features",
+      "arguments": {
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
         "features": [
@@ -395,102 +491,101 @@
       }
     },
     {
-      "tool": "se_set_view",
+      "command": "set_view",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "orientation": "Iso"
       }
     },
     {
-      "tool": "se_capture_viewport",
+      "command": "capture_viewport",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "path": "plate-with-hole.png"
       },
       "result": {
-        "content_types": [
-          "image",
-          "text"
-        ]
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.png",
+        "size_bytes": 13083
       }
     },
     {
-      "tool": "se_save_document",
+      "command": "save_document",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "path": "plate-with-hole.par"
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par",
         "type": 1,
         "dirty": false,
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par",
         "size_bytes": 180224
       }
     },
     {
-      "tool": "se_export_step",
+      "command": "export_step",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "path": "plate-with-hole.step"
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "format": "STEP",
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.step",
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.step",
         "size_bytes": 9413
       }
     },
     {
-      "tool": "se_close_document",
+      "command": "close_document",
       "arguments": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f"
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2"
       },
       "result": {
-        "document_id": "a9f48d6f35324fec87fb531373ec4e4f",
+        "document_id": "7d358582c8c64a2f88a8eb983b4010e2",
         "closed": true
       }
     },
     {
-      "tool": "se_open_document",
+      "command": "open_document",
       "arguments": {
-        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par"
+        "path": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par",
         "type": 1,
         "dirty": false
       }
     },
     {
-      "tool": "se_get_document",
+      "command": "get_document",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181"
+        "document_id": "935ec4b0996d42f6b5457072075fe026"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "name": "plate-with-hole.par",
-        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par",
+        "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par",
         "type": 1,
         "dirty": false
       }
     },
     {
-      "tool": "se_list_documents",
+      "command": "list_documents",
       "arguments": {},
       "result": {
         "documents": [
           {
-            "document_id": "7860d2c75d54495baf8d5c70390b3181",
+            "document_id": "935ec4b0996d42f6b5457072075fe026",
             "name": "plate-with-hole.par",
-            "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610\\plate-with-hole.par",
+            "full_name": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926\\plate-with-hole.par",
             "type": 1,
             "dirty": false
           }
@@ -498,9 +593,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181"
+        "document_id": "935ec4b0996d42f6b5457072075fe026"
       },
       "result": {
         "models": [
@@ -530,25 +625,25 @@
       }
     },
     {
-      "tool": "se_new_part",
+      "command": "new_part",
       "arguments": {},
       "result": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
-        "name": "零件5",
-        "full_name": "零件5",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
+        "name": "零件7",
+        "full_name": "零件7",
         "type": 1,
         "dirty": false
       }
     },
     {
-      "tool": "se_create_cylinder",
+      "command": "create_cylinder",
       "arguments": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "radius_mm": 10,
         "height_mm": 30
       },
       "result": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "operation": "add",
         "geometry": {
           "models": [
@@ -579,9 +674,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8"
+        "document_id": "9eb6915412034399b4308e66b41fbb28"
       },
       "result": {
         "models": [
@@ -611,29 +706,29 @@
       }
     },
     {
-      "tool": "se_create_rectangle",
+      "command": "create_rectangle",
       "arguments": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "width_mm": 5,
         "height_mm": 5
       },
       "result": {
-        "profile_id": "df2acec803b74b70b958919f4bb3d12e",
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "profile_id": "f0a9aca04c7b4724ae8ae3690a3fc962",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "validation_code": 0,
         "validation_passed": true,
         "note": "Extrusion verifies that the constructed loop produces the expected solid."
       }
     },
     {
-      "tool": "se_extrude",
+      "command": "extrude",
       "arguments": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
-        "profile_id": "df2acec803b74b70b958919f4bb3d12e",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
+        "profile_id": "f0a9aca04c7b4724ae8ae3690a3fc962",
         "distance_mm": 40
       },
       "result": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "operation": "add",
         "geometry": {
           "models": [
@@ -664,9 +759,9 @@
       }
     },
     {
-      "tool": "se_geometry",
+      "command": "geometry",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181"
+        "document_id": "935ec4b0996d42f6b5457072075fe026"
       },
       "result": {
         "models": [
@@ -696,91 +791,92 @@
       }
     },
     {
-      "tool": "se_close_document",
+      "command": "close_document",
       "arguments": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "discard_changes": true
       },
       "result": {
-        "document_id": "ab7ba3e391f54fdc843cb761e4500ab8",
+        "document_id": "9eb6915412034399b4308e66b41fbb28",
         "closed": true
       }
     },
     {
-      "tool": "se_set_view",
+      "command": "set_view",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Front"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Front"
       }
     },
     {
-      "tool": "se_set_view",
+      "command": "set_view",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Top"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Top"
       }
     },
     {
-      "tool": "se_set_view",
+      "command": "set_view",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Right"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Right"
       }
     },
     {
-      "tool": "se_set_view",
+      "command": "set_view",
       "arguments": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Iso"
       },
       "result": {
-        "document_id": "7860d2c75d54495baf8d5c70390b3181",
+        "document_id": "935ec4b0996d42f6b5457072075fe026",
         "orientation": "Iso"
       }
     }
   ],
-  "tool_count": 23,
+  "tool_count": 4,
+  "command_count": 23,
   "connection": {
     "connected": true,
-    "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-152610",
+    "output_root": "C:\\OneHistory\\HistoryClio\\2026-038-SolidEdgeMCP\\b-Code-SolidEdgeMCP\\data\\smoke-20261021-155926",
     "version": "220.00.00.104",
     "document_count": 0,
     "started": false
   },
-  "unique_tools_exercised": [
-    "se_capture_viewport",
-    "se_close_document",
-    "se_connect",
-    "se_create_box",
-    "se_create_circle",
-    "se_create_cylinder",
-    "se_create_rectangle",
-    "se_export_step",
-    "se_extrude",
-    "se_features",
-    "se_geometry",
-    "se_get_document",
-    "se_list_documents",
-    "se_list_variables",
-    "se_new_part",
-    "se_open_document",
-    "se_reference_planes",
-    "se_save_document",
-    "se_set_extrusion_depth",
-    "se_set_variable",
-    "se_set_view",
-    "se_status"
+  "unique_commands_exercised": [
+    "capture_viewport",
+    "close_document",
+    "connect",
+    "create_box",
+    "create_circle",
+    "create_cylinder",
+    "create_rectangle",
+    "export_step",
+    "extrude",
+    "features",
+    "geometry",
+    "get_document",
+    "list_documents",
+    "list_variables",
+    "new_part",
+    "open_document",
+    "reference_planes",
+    "save_document",
+    "set_extrusion_depth",
+    "set_variable",
+    "set_view",
+    "status"
   ]
 }
