@@ -1,16 +1,16 @@
 # Solid Edge AI MCP
 
-用自然语言让 AI 操作 Siemens Solid Edge 的 Python MCP 服务。第一版专注有序建模零件（`.par`），采用官方 MCP Python SDK 和 `pywin32`，所有 COM 对象均留在独立 STA 线程。
+用自然语言让 AI 操作 Siemens Solid Edge 的 C# MCP 服务。第一版专注有序建模零件（`.par`），采用官方 MCP C# SDK（`ModelContextProtocol.Core`）和 COM 后期绑定，所有 COM 对象均留在独立 STA 线程。
 
-**23 个工具 · stdio MCP · 毫米输入 · Windows · MIT**
+**23 个工具 · stdio MCP · 毫米输入 · Windows · .NET 8 · MIT**
 
-已在 **Solid Edge 2020 / 220.00.00.104、Python 3.12.10 x64** 上通过真实 MCP 客户端完成建模、改厚度、切孔、截图、保存、重新打开和 STEP 导出。其他 Solid Edge 版本尚未验证。
+已在 **Solid Edge 2020 / 220.00.00.104、.NET 8.0.31 x64** 上通过真实 MCP 客户端完成建模、改厚度、切孔、截图、保存、重新打开和 STEP 导出。其他 Solid Edge 版本尚未验证。
 
 ![实机生成的带孔板](examples/demo/plate-with-hole.png)
 
 ## 快速使用
 
-要求：Windows、已安装并授权的 Solid Edge、Python 3.12。程序本身要求 Python 3.11+，一键脚本固定使用已验证的 3.12。
+要求：Windows、已安装并授权的 Solid Edge、.NET 8 SDK（只运行时需 .NET 8 桌面运行时）。
 
 在项目目录打开 PowerShell：
 
@@ -18,7 +18,7 @@
 .\scripts\setup.ps1
 ```
 
-脚本创建项目内 `.venv`，按锁定版本安装依赖，安装本项目，生成实际路径的客户端配置，并检查 Solid Edge 的 COM 注册。本次交付目录已经完成此步骤，可直接使用 `config/` 中的配置。项目搬家后重新运行脚本生成路径。
+脚本把服务发布到 `obj/app/SolidEdgeMcp.exe`，生成实际路径的客户端配置，并检查 Solid Edge 的 COM 注册。项目搬家后重新运行脚本生成路径。客户端正在运行服务时 exe 被占用，需先停掉客户端里的 MCP 服务再重新发布。
 
 如 PowerShell 的执行策略阻止本地脚本，可仅对当前脚本进程运行：
 
@@ -30,7 +30,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 
 - **Codex**：将 `config/codex.toml` 的配置段合并到自己的 `config.toml`，重新加载 MCP 服务。
 - **Claude Desktop / Cursor / 其他支持 stdio 的客户端**：使用 `config/mcp.json` 中 `mcpServers.solid-edge` 的配置。
-- 配置文件已经填写当前项目 Python 的绝对路径；不要把 JSON 文件整体粘贴进 TOML。
+- 配置文件已经填写 `SolidEdgeMcp.exe` 的绝对路径；不要把 JSON 文件整体粘贴进 TOML。
 - 服务进程由客户端启动。无需先打开常驻终端，也无需 API Key。
 
 Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超时。字段依据 [Codex 官方 MCP 文档](https://developers.openai.com/codex/mcp) 核对。
@@ -42,7 +42,7 @@ Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超�
 检查环境或手动启动：
 
 ```powershell
-.\.venv\Scripts\python.exe -m solid_edge_mcp --doctor
+.\obj\app\SolidEdgeMcp.exe --doctor
 .\scripts\start.ps1
 ```
 
@@ -89,18 +89,16 @@ Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超�
 ## 验证
 
 ```powershell
-.\scripts\setup.ps1 -Dev
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\ruff.exe check .
-.\.venv\Scripts\ruff.exe format --check .
+dotnet build .\SolidEdgeMcp.sln
+dotnet test .\SolidEdgeMcp.sln --no-build
 ```
 
-15 项自动化测试覆盖：真实 stdio 握手与工具发现、非法参数和错误响应、输出路径和覆盖保护、文档 ID 失效、跨文档轮廓拒绝、未保存文档保护、COM 单线程生命周期、超时不重试写入、线程退出清理等。
+构建开启告警即错误（`Directory.Build.props`）。15 项自动化测试覆盖：真实 stdio 握手与工具发现、非法参数和错误响应、输出路径和覆盖保护、文档 ID 失效、跨文档轮廓拒绝、未保存文档保护、COM 单线程（STA）生命周期、超时不重试写入、非有限数值不出线程、线程退出清理等。
 
 有 Solid Edge 的 Windows 机器可运行实机测试：
 
 ```powershell
-.\.venv\Scripts\python.exe .\scripts\live_smoke.py --keep-open
+dotnet run --project .\scripts\LiveSmoke -- --keep-open
 ```
 
 它创建独立测试零件和带时间戳的输出目录；只关闭本次创建的文档。`--keep-open` 在成功后保留演示板。没有该选项时测试结束会关闭自己的文档。
@@ -110,18 +108,21 @@ Codex 的工具超时配置为 150 秒，长于服务内部的 120 秒 COM 超�
 ## 项目结构
 
 ```text
-src/solid_edge_mcp/
-  server.py       MCP 工具、参数 Schema、资源和生命周期
-  worker.py       STA 线程、超时与退出处理
-  backend.py      Solid Edge 2020 COM 实现
-  paths.py        输出目录、覆盖保护和文件验证
-  __main__.py     stdio 启动与环境诊断
-scripts/          安装、启动、配置生成与实机测试
-tests/            不需要启动 Solid Edge 的回归测试
-config/           当前机器可直接使用的客户端配置
-examples/demo/    实际生成的零件、STEP、PNG 和验证记录
+SolidEdgeMcp.sln
+src/SolidEdgeMcp/
+  SolidEdgeServer.cs    MCP 工具表、资源、低层处理器与错误响应
+  ToolParameters.cs     参数规格：同一份定义既生成 JSON Schema 又做入参校验
+  ComWorker.cs          STA 线程、超时与退出处理
+  SolidEdgeBackend.cs   Solid Edge 2020 COM 实现（dynamic 后期绑定）
+  ComInterop.cs         GetActiveObject、COM 身份比较、IDispatch 直调
+  OutputPaths.cs        输出目录、覆盖保护和文件验证
+  Program.cs            stdio 启动与环境诊断（--doctor）
+tests/SolidEdgeMcp.Tests/  不需要启动 Solid Edge 的回归测试（xunit）
+scripts/              安装、启动脚本；LiveSmoke/ 为实机冒烟客户端
+config/               当前机器可直接使用的客户端配置（setup 生成）
+examples/demo/        实际生成的零件、STEP、PNG 和验证记录
 ```
 
-当前不包含装配约束、工程图、钣金、倒角/圆角、放样/扫掠或同步建模工具。后续可沿 `backend.py` 增加 COM 实现，再在 `server.py` 注册明确参数的工具，并补相应实机验证。
+当前不包含装配约束、工程图、钣金、倒角/圆角、放样/扫掠或同步建模工具。后续可在 `SolidEdgeBackend.cs` 增加 COM 实现，再在 `SolidEdgeServer.cs` 注册明确参数的工具，并补相应实机验证。
 
 参考项目、提交号和许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

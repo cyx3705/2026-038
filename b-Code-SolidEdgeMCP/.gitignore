@@ -1,15 +1,10 @@
-.venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.ruff_cache/
-*.egg-info/
-dist/
-build/
+bin/
+obj/
+TestResults/
+*.user
+.vs/
 data/
-!data/.gitkeep
 .env
 
 # OneHistory local runtime and generated machine-specific client configuration
-obj/
 config/

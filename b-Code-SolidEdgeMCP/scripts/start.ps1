@@ -1,9 +1,8 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$pythonExe = Join-Path $projectRoot 'obj\venv\Scripts\python.exe'
-if (-not (Test-Path -LiteralPath $pythonExe)) {
+$serverExe = Join-Path $projectRoot 'obj\app\SolidEdgeMcp.exe'
+if (-not (Test-Path -LiteralPath $serverExe)) {
     throw 'Run scripts\setup.ps1 first.'
 }
-$env:PYTHONUTF8 = '1'
-& $pythonExe -m solid_edge_mcp --output-dir (Join-Path $projectRoot 'data')
+& $serverExe --output-dir (Join-Path $projectRoot 'data')
 exit $LASTEXITCODE

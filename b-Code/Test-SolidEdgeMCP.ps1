@@ -4,24 +4,16 @@ param([switch]$Live)
 $ErrorActionPreference = 'Stop'
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $componentRoot = Join-Path $projectRoot 'b-Code-SolidEdgeMCP'
-$pythonExe = Join-Path $componentRoot 'obj\venv\Scripts\python.exe'
-
-if (-not (Test-Path -LiteralPath $pythonExe -PathType Leaf)) {
-    throw "Missing $pythonExe. Run b-Code-SolidEdgeMCP\scripts\setup.ps1 -Dev first."
-}
+$solution = Join-Path $componentRoot 'SolidEdgeMcp.sln'
 
 Push-Location $componentRoot
 try {
-    & $pythonExe -m pytest -q
+    & dotnet build $solution --nologo
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $pythonExe -m ruff check .
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $pythonExe -m ruff format --check .
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $pythonExe -m pip check
+    & dotnet test $solution --nologo --no-build
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     if ($Live) {
-        & $pythonExe .\scripts\live_smoke.py
+        & dotnet run --project .\scripts\LiveSmoke --no-build
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 }

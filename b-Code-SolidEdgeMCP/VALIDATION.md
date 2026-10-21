@@ -1,12 +1,12 @@
 # 验证记录
 
-日期：2026-10-11（Asia/Shanghai）。
+日期：2026-10-21（Asia/Shanghai），C# 重写（0.2.0）后重新实测。Python 版（0.1.0，2026-10-11）的同一组检查数值与本次逐项一致。
 
-环境：Windows x64，Solid Edge 2020 `220.00.00.104`，Python `3.12.10`，MCP SDK `1.30.0`，pywin32 `312`。依赖完整版本在 `requirements.lock.txt` / `requirements-dev.lock.txt`。
+环境：Windows x64，Solid Edge 2020 `220.00.00.104`，.NET `8.0.31`，MCP C# SDK `ModelContextProtocol.Core 1.4.0`。依赖版本写在各 `.csproj`。
 
 ## 实机结果
 
-使用 `scripts/live_smoke.py` 启动真实 stdio MCP 进程，通过 `ClientSession` 调用，未用模拟 CAD 后端。全部 23 个工具至少成功调用一次，其中 `se_disconnect` 在清理阶段验证，其余 22 个工具保留在逐步 JSON 记录中。
+使用 `scripts/LiveSmoke` 启动真实 stdio MCP 进程，通过官方 `McpClient` 调用，未用模拟 CAD 后端。全部 23 个工具至少成功调用一次，其中 `se_disconnect` 在清理阶段验证，其余 22 个工具保留在逐步 JSON 记录中。
 
 | 检查 | 预期 | 实测 |
 | --- | --- | --- |
@@ -27,12 +27,15 @@
 
 ## 自动化结果
 
-`pytest -q`：15 项通过。`ruff check .` 和 `ruff format --check .` 通过。安装脚本、项目独立虚拟环境和 `--doctor` 已运行成功。
+`dotnet build`（告警即错误）零告警，`dotnet test`：15 项通过。`scripts/setup.ps1`（发布到 `obj/app`、生成客户端配置）和 `--doctor` 已运行成功。
 
 ## 2020 版适配事实
 
 1. 本地 `fwksupp.tlb` 明确规定：直线关键点索引 `igLineStart=0`、`igLineEnd=1`、`igLineMiddle=2`。使用另一套 1/2 关键点标志会移动错误位置，已通过实机矩形尺寸发现并修正。
-2. 带类型信息的 pywin32 COM 方法对 SAFEARRAY 接受普通 tuple/list；显式套 VARIANT 会触发类型错误。`GetRange` 的输出从返回 tuple 中读取。
+2. 签名以 `Part.tlb` / `geometry.tlb` 为准，C# `dynamic` 按类型信息封送：
+   - `ProfileArray` 是 `SAFEARRAY(IDispatch*)*`，必须以 `ref` 传 `DispatchWrapper[]`；`object[]` 会被拒（“Could not convert argument 2”）。
+   - `Body.GetRange` 的两个 `SAFEARRAY(double)*` 以 `ref Array`（`double[3]`）传入并原地回填。
+   - `ApplyDirection1Extent` 的 `KeyPointFlags` 声明为 `KeyPointExtentConstants*`，`dynamic` 绑定器无法转换该签名；改用 `Type.InvokeMember` 直接走 IDispatch，第 5 参按引用、关键点传 `DispatchWrapper(null)`。
 3. `SaveAsImage("*.png")` 在本机生成的是追加 `.tif` 的文件。服务改用临时 BMP，随后转换 PNG，并验证生成文件。
 4. 新建拉伸特征的深度未自动出现于本机变量查询；因此提供基于 `ApplyDirection1Extent` 的 `se_set_extrusion_depth`。
 

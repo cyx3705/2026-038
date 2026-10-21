@@ -37,5 +37,5 @@
 
 - 本仓为 2026-038-SolidEdgeMCP，独立 MCP 服务，不是 OneHistory 宿主模块。
 - 业务源码在 b-Code-SolidEdgeMCP，维护工具在 b-Code。
-- 虚拟环境在组件的 obj/venv；config、data 为不入库的本机生成目录。
+- C# 解决方案为组件内 SolidEdgeMcp.sln；发布产物在组件的 obj/app，config、data 为不入库的本机生成目录。
 - 项目合同始终以 -Instantiation 严格模式验收。
