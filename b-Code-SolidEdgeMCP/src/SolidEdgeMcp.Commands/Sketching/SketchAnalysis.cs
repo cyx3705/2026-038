@@ -33,6 +33,13 @@ public sealed partial class SketchAnalysis
     /// <summary>Splines are measured along a stand-in curve, so areas are close but not exact.</summary>
     public bool Approximate { get; private set; }
 
+    /// <summary>
+    /// Ellipses and splines sweep into B-spline faces, whose volume Solid Edge only estimates
+    /// (live finding: an exact 12x5 ellipse extruded 10 mm reads 0.6% large), so a feature built
+    /// on them can be checked only loosely.
+    /// </summary>
+    public bool EstimatedVolume => Approximate || Loops.Any(l => l.Closed && l.Steps.Any(s => s.Element is EllipseEl or SplineEl));
+
     /// <summary>Area of the region an extrusion would use: outer loops minus their holes.</summary>
     public double NetArea => Loops.Where(l => l.Closed).Sum(l => (l.Depth % 2 == 0 ? 1 : -1) * Math.Abs(l.SignedArea));
 

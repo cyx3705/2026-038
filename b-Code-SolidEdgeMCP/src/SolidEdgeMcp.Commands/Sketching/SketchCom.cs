@@ -281,6 +281,29 @@ public static class SketchCom
         return (com, key.Key.Length == 0 ? 0 : Sketch.KeypointIndex(element, key.Key));
     }
 
+    /// <summary>Suffix of the hidden construction line that stands in for a datum as a symmetry axis.</summary>
+    public const string SymmetryTrace = ".symmetry";
+
+    /// <summary>
+    /// The COM line to mirror about. AddSymmetric refuses a projected reference plane (live finding:
+    /// E_FAIL), so a datum axis gets a construction line collinear with it, drawn once per sketch.
+    /// </summary>
+    private static object SymmetryAxis(dynamic profile, SketchAnalysis plan, Drawing drawing, string axis)
+    {
+        if (axis is not (SketchSpec.XAxis or SketchSpec.YAxis))
+            return drawing.Com.TryGetValue(axis, out var com) ? com : throw new EdgeError($"{axis} cannot be related directly.");
+        var id = axis + SymmetryTrace;
+        if (drawing.Com.TryGetValue(id, out var drawn))
+            return drawn;
+        var datum = plan.References.OfType<LineEl>().First(e => e.Id == axis);
+        object line = profile.Lines2d.AddBy2Points(datum.Start.X / M, datum.Start.Y / M, datum.End.X / M, datum.End.Y / M);
+        profile.ToggleConstruction(line);
+        profile.Relations2d.AddColinear(line, drawing.Com[axis]);
+        drawing.Com[id] = line;
+        drawing.Ids[Name(line)] = id;
+        return line;
+    }
+
     public static void Relate(dynamic profile, SketchAnalysis plan, Drawing drawing)
     {
         var relations = profile.Relations2d;
@@ -325,7 +348,7 @@ public static class SketchCom
                     relations.AddConcentric(C(e[0]), C(e[1]));
                     break;
                 case "symmetric":
-                    relations.AddSymmetric(C(r.Axis!), C(e[0]), C(e[1]));
+                    relations.AddSymmetric(SymmetryAxis(profile, plan, drawing, r.Axis!), C(e[0]), C(e[1]));
                     break;
                 case "coincident":
                 {
@@ -451,7 +474,8 @@ public static class SketchCom
                 d.AngleCompliment = !Convert.ToBoolean(d.AngleCompliment);
                 actual = Value(d);
             }
-            if (planned is { } value && Math.Abs(actual - value) > Math.Max(1e-6, Math.Abs(value) * 1e-7))
+            // The solver may have moved geometry by up to the relation tolerance when relations were added.
+            if (planned is { } value && Math.Abs(actual - value) > Math.Max(Sketch.RelationTolerance, Math.Abs(value) * 1e-7))
                 throw new EdgeError($"Solid Edge measured {Sketch.Format(actual)} {SketchReport.Unit(spec)} for dimension "
                     + $"{spec.Json().ToJsonString()}, not the planned {Sketch.Format(value)}.");
             d.Constraint = spec.Driving;

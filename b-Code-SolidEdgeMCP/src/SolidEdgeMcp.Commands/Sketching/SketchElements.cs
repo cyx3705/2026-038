@@ -140,6 +140,9 @@ public sealed record PointEl(string Id, Pt At) : Element(Id)
 public static class Sketch
 {
     public const double Tolerance = 1e-6; // mm; endpoints closer than this are the same point
+    // mm; relations and stated dimension values hold to the precision of typed coordinates (4 decimals),
+    // and Solid Edge's solver closes that gap when the relation is added.
+    public const double RelationTolerance = 1e-4;
     public const double MaxCoordinate = 1_000_000;
     public const int MaxElements = 500;
 

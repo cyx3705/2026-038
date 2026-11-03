@@ -25,6 +25,7 @@ public static class FeatureKit
     }
 
     /// <summary>A first feature must make exactly the expected volume; later ones change it in the right direction.</summary>
+    /// <param name="approximate">The sketch or the solid's volume is only estimated (splines, ellipses).</param>
     public static void Verify(double before, double after, double? expected, bool first, int sign, bool approximate)
     {
         var delta = after - before;
@@ -90,7 +91,7 @@ public sealed class Extrude() : SeCommand("extrude", CommandKind.Write,
         edge.Profiles.Remove(profileId);
         var after = c.Run("geometry", geometry);
         double? expected = sketch is null ? null : Math.Abs(sketch.NetArea) * distanceMm;
-        FeatureKit.Verify(before, (double)after["total_volume_mm3"]!, expected, models == 0, operation == "add" ? 1 : -1, sketch?.Approximate == true);
+        FeatureKit.Verify(before, (double)after["total_volume_mm3"]!, expected, models == 0, operation == "add" ? 1 : -1, sketch?.EstimatedVolume == true);
         for (var i = 1; i <= profileCount; i++)
             set.Profiles.Item(i).Visible = false;
         return new JsonObject
@@ -209,7 +210,7 @@ public sealed class Revolve() : SeCommand("revolve", CommandKind.Write,
         }
         edge.Profiles.Remove(profileId);
         var after = c.Run("geometry", geometry);
-        FeatureKit.Verify(before, (double)after["total_volume_mm3"]!, expected, models == 0, operation == "add" ? 1 : -1, sketch.Approximate);
+        FeatureKit.Verify(before, (double)after["total_volume_mm3"]!, expected, models == 0, operation == "add" ? 1 : -1, sketch.EstimatedVolume);
         for (var i = 1; i <= profileCount; i++)
             set.Profiles.Item(i).Visible = false;
         return new JsonObject

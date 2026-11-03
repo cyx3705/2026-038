@@ -1,8 +1,8 @@
 namespace SolidEdgeMcp.Commands.Sketching;
 
 /// <summary>
-/// Relations and dimensions against the geometry. A relation must already hold, so the solver
-/// never has to move anything; a dimension's value is what the geometry measures (and must match
+/// Relations and dimensions against the geometry. A relation must already hold (to typed-coordinate
+/// precision, Sketch.RelationTolerance), so the solver never moves anything further; a dimension's value is what the geometry measures (and must match
 /// a stated value). Both are checked again on the geometry read back from Solid Edge.
 /// </summary>
 public sealed partial class SketchAnalysis
@@ -24,7 +24,7 @@ public sealed partial class SketchAnalysis
         new PointEl(SketchSpec.Origin, new Pt(0, 0)) { External = true, Construction = true },
     ];
 
-    private double Linear => Math.Max(_tol, Math.Max(Max.X - Min.X, Max.Y - Min.Y) * 1e-9);
+    private double Linear => Math.Max(Math.Max(_tol, Sketch.RelationTolerance), Math.Max(Max.X - Min.X, Max.Y - Min.Y) * 1e-9);
 
     private double Angular => Math.Max(1e-9, Linear / Math.Max(1, Math.Max(Max.X - Min.X, Max.Y - Min.Y)));
 
@@ -93,7 +93,7 @@ public sealed partial class SketchAnalysis
             try
             {
                 value = Measure(dimension);
-                if (dimension.Value is { } stated && Math.Abs(stated - value.Value) > Math.Max(1e-6, Math.Abs(stated) * 1e-9))
+                if (dimension.Value is { } stated && Math.Abs(stated - value.Value) > Math.Max(Sketch.RelationTolerance, Math.Abs(stated) * 1e-9))
                     failure = $"geometry measures {Sketch.Format(value.Value)}, not the stated {Sketch.Format(stated)}";
             }
             catch (EdgeError exc)

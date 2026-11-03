@@ -57,6 +57,8 @@ public static class Sketches
         if (spec is null)
             return elements;
         var references = spec.References.Select(r => r.Id).ToHashSet(StringComparer.Ordinal);
+        // Stand-ins for datum symmetry axes are this server's helpers, not part of the description.
+        elements.RemoveAll(e => e.Id.StartsWith('@') && e.Id.EndsWith(SketchCom.SymmetryTrace, StringComparison.Ordinal));
         // The revolve axis is ordinary geometry to Solid Edge; to the description it never forms a region.
         elements = elements.Select(e => e.Id == spec.Axis ? e with { Construction = true }
             : references.Contains(e.Id) ? e with { External = true } : e).ToList();

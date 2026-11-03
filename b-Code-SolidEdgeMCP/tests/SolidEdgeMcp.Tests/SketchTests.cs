@@ -301,6 +301,41 @@ public sealed class SketchTests
     }
 
     [Fact]
+    public void RelationsHoldToTypedCoordinatePrecision()
+    {
+        // 32 cos 45 = 22.627417...; four decimals leave the hole centre 2.4e-5 mm off the pitch circle.
+        var plan = Plan("""
+            {"entities": [{"id": "R", "type": "rectangle", "center": [0, 0], "size": [100, 100]},
+                          {"id": "PCD", "type": "circle", "center": [0, 0], "radius": 32, "construction": true},
+                          {"id": "H1", "type": "circle", "center": [22.6274, 22.6274], "radius": 4},
+                          {"id": "H2", "type": "circle", "center": [-22.6274, 22.6274], "radius": 4}],
+             "relations": [{"type": "point_on", "point": ["H1", "center"], "target": "PCD"},
+                           {"type": "symmetric", "axis": "@y_axis", "entities": ["H1", "H2"]}],
+             "dimensions": [{"type": "distance", "from": ["H1", "center"], "to": ["H2", "center"], "axis": "x", "value": 45.2548}]}
+            """);
+        Assert.True(plan.Valid, plan.Issues.ToJsonString());
+
+        var off = Plan("""
+            {"entities": [{"id": "PCD", "type": "circle", "center": [0, 0], "radius": 32, "construction": true},
+                          {"id": "H1", "type": "circle", "center": [22.63, 22.63], "radius": 4}],
+             "relations": [{"type": "point_on", "point": ["H1", "center"], "target": "PCD"}]}
+            """);
+        Assert.Contains(off.Issues, i => (string)i!["type"]! == "relation_unsatisfied");
+    }
+
+    [Fact]
+    public void EllipsesAndSplinesMakeTheVolumeAnEstimate()
+    {
+        Assert.False(new SketchAnalysis(Parse(Slot)).EstimatedVolume);
+        var ellipse = new SketchAnalysis(Parse("""
+            [{"id": "R", "type": "rectangle", "center": [0, 0], "size": [60, 30]},
+             {"id": "E", "type": "ellipse", "center": [0, 0], "major_radius": 12, "minor_radius": 5}]
+            """));
+        Assert.False(ellipse.Approximate); // the ellipse's area itself is exact
+        Assert.True(ellipse.EstimatedVolume);
+    }
+
+    [Fact]
     public void ReportCarriesSvgDrawnFromTheGeometry()
     {
         var analysis = new SketchAnalysis(Parse(Slot));
